@@ -63,10 +63,10 @@ public class Context_Service extends Service implements SensorEventListener{
 	private static boolean isRunning = false;
 	private static boolean isAccelRunning = false;
 	private static final int NOTIFICATION_ID = 777;
-	private double last = 9;
-	private final int changeSize = 5 ; // pref: 5
+	
+	private final int changeSize = 15 ; // pref: 30
 	private ArrayList<Double> changeList = new ArrayList<Double>();
-
+	private double last = 20;
 
 	/**
 	 * Filter class required to filter noise from accelerometer
@@ -110,6 +110,7 @@ public class Context_Service extends Service implements SensorEventListener{
 				//double CUTOFF_FREQUENCY = 0.3;
 				//filter = new Filter(CUTOFF_FREQUENCY);
 				stepCount = 0;
+				doubCount = 0;
 				break;
 			}
 			case MSG_STOP_ACCELEROMETER:
@@ -120,7 +121,11 @@ public class Context_Service extends Service implements SensorEventListener{
 				showNotification();
 				//Free filter and step detector
 				filter = null;
-
+				if(!changeList.isEmpty()){
+					for(Double a : changeList){
+						changeList.remove(a);
+					}
+				}
 				break;
 			}
 			default:
@@ -235,18 +240,6 @@ public class Context_Service extends Service implements SensorEventListener{
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 	/* getInstance() and isRunning() are required by the */
 	static Context_Service getInstance(){
 		return sInstance;
@@ -320,7 +313,6 @@ public class Context_Service extends Service implements SensorEventListener{
 			doubCount += detectSteps(filtAcc[0], filtAcc[1], filtAcc[2]); 
 			stepCount = (int)doubCount;
 
-
 			//detectSteps() is not implemented 
 			sendUpdatedStepCountToUI();
 
@@ -342,9 +334,9 @@ public class Context_Service extends Service implements SensorEventListener{
 		double z = filt_acc_z;		
 		double ret = 0;
 		double th = Math.sqrt(Math.pow(x,2) + Math.pow(y, 2) + Math.pow(z, 2));
-		double la = last;
-		double maxThreshold = 0.721;// 0.721
-		double minThreshold = 0.61; // 0.60
+		double maxThreshold = 0.60; // 0.621
+		double minThreshold = 0.54; // 0.51
+		
 		if(changeList.size() < changeSize){
 			changeList.add(new Double(th));
 		}
@@ -366,18 +358,6 @@ public class Context_Service extends Service implements SensorEventListener{
 			ret = 0.5;
 		}
 		//last = th;
-		
-
-		
-		
-//		
-//		if (Math.abs(accel - thisAverage) > threshold && Math.abs(accel) > minThresh  ){
-//			ret = 1;
-//		}
-//		
-//		threshold = Math.abs(accel - thisAverage);
-
-
 		return ret;
 
 	}
