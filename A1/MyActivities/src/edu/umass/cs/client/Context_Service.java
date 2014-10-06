@@ -63,9 +63,11 @@ public class Context_Service extends Service implements SensorEventListener{
 	private static boolean isRunning = false;
 	private static boolean isAccelRunning = false;
 	private static final int NOTIFICATION_ID = 777;
+	private double last = 9;
+	private final int changeSize = 5 ; // pref: 5
+	private ArrayList<Double> changeList = new ArrayList<Double>();
 
-	private double threshold = 2.5;
-	private double lastDomAxis;
+
 	/**
 	 * Filter class required to filter noise from accelerometer
 	 */
@@ -75,6 +77,7 @@ public class Context_Service extends Service implements SensorEventListener{
 	 * Step count to be displayed in UI
 	 */
 	private int stepCount = 0;
+	private double doubCount = 0.0;
 
 	//Messenger used by clients
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
@@ -101,7 +104,7 @@ public class Context_Service extends Service implements SensorEventListener{
 				showNotification();
 				//Set up filter
 				//Following sets up smoothing filter from mcrowdviz
-				int SMOOTH_FACTOR = 2;
+				int SMOOTH_FACTOR = 1;
 				filter = new Filter(SMOOTH_FACTOR);
 				//OR Use Butterworth filter from mcrowdviz
 				//double CUTOFF_FREQUENCY = 0.3;
@@ -272,6 +275,7 @@ public class Context_Service extends Service implements SensorEventListener{
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 		nm.cancel(NOTIFICATION_ID); // Cancel the persistent notification.
 		isRunning = false;
 		//Don't let Context_Service die!
@@ -312,9 +316,9 @@ public class Context_Service extends Service implements SensorEventListener{
 			//First, Get filtered values
 			double filtAcc[] = filter.getFilteredValues(accel[0], accel[1], accel[2]);
 			//Now, increment 'stepCount' variable if you detect any steps here
-
-
-			stepCount += detectSteps(filtAcc[0], filtAcc[1], filtAcc[2]); 
+			
+			doubCount += detectSteps(filtAcc[0], filtAcc[1], filtAcc[2]); 
+			stepCount = (int)doubCount;
 
 
 			//detectSteps() is not implemented 
@@ -331,51 +335,65 @@ public class Context_Service extends Service implements SensorEventListener{
 	 * @param filt_acc_z
 	 * @return
 	 */
-	public int detectSteps(double filt_acc_x, double filt_acc_y, double filt_acc_z) {
-
-		// first lets figure out the orientation of the phone
+	public double detectSteps(double filt_acc_x, double filt_acc_y, double filt_acc_z) {
 
 		double x = filt_acc_x;
 		double y = filt_acc_y;
 		double z = filt_acc_z;		
-		int ret = 0;
-		double domAxis =0;
-		String domAxStr = domAx(x, y, z);
-
-		if(domAxStr.equals("x")){
-			domAxis = x;
+		double ret = 0;
+		double th = Math.sqrt(Math.pow(x,2) + Math.pow(y, 2) + Math.pow(z, 2));
+		double la = last;
+		double maxThreshold = 0.721;// 0.721
+		double minThreshold = 0.61; // 0.60
+		if(changeList.size() < changeSize){
+			changeList.add(new Double(th));
 		}
-		else if(domAxStr.equals("y")){
-			domAxis = y;
+		else{
+			changeList.remove(0);
+			changeList.add(new Double(th));
 		}
-		else if(domAxStr.equals("z")){
-			domAxis = z;
-		}
-
-		domAxis = Math.sqrt(Math.pow(x,2) + Math.pow(y, 2) + Math.pow(z, 2));
 		
-		if (Math.abs(domAxis - lastDomAxis) > threshold ){
-			ret+=1;
-		}
-
-		lastDomAxis = domAxis;
+		Double aveChange = 0.0;
 		
+		for(Double a : changeList){
+			aveChange += a;
+		}
+		aveChange /= changeList.size(); // takes the average of x accelerations
+		
+		double change = Math.abs(th - aveChange);
+		
+		if (change > minThreshold && change <= maxThreshold){
+			ret = 0.5;
+		}
+		//last = th;
+		
+
+		
+		
+//		
+//		if (Math.abs(accel - thisAverage) > threshold && Math.abs(accel) > minThresh  ){
+//			ret = 1;
+//		}
+//		
+//		threshold = Math.abs(accel - thisAverage);
+
+
 		return ret;
 
 	}
 
-	private String domAx(double x, double y, double z){
+	private double domAx(double x, double y, double z){
 		if(Math.abs(x) > Math.abs(y) && Math.abs(x) > Math.abs(z)){
-			return "x";
+			return x;
 		}
 		else if(Math.abs(y) > Math.abs(x) && Math.abs(y) > Math.abs(z)){
-			return "y";
+			return y;
 		}
 		else if(Math.abs(z) > Math.abs(x) && Math.abs(z) > Math.abs(y)){
-			return "z";
+			return z;
 		}
 		else{
-			return "x";
+			return x;
 		}
 
 	}
