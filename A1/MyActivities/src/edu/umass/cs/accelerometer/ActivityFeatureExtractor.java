@@ -592,7 +592,7 @@ public class ActivityFeatureExtractor {
 	}
 	
 	public static void main(String args[]) {
-		String INPUT_DIR = "/Users/aparate/Downloads";
+		String INPUT_DIR = "C:/Users/Nam Phan/Desktop/Test";
 		ActivityFeatureExtractor afe = new ActivityFeatureExtractor(5000);
 		afe.processFiles(INPUT_DIR);
 	}

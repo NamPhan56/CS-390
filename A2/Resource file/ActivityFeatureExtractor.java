@@ -436,7 +436,7 @@ public class ActivityFeatureExtractor {
 			while((s=br.readLine())!=null) {
 				String tokens[] = s.split(",");
 				long timeInMillis = Long.parseLong(tokens[0]);
-				String label = tokens[2].trim().toLowerCase();
+				String label = tokens[4].trim().toLowerCase();
 				if(!label.equals("start") && !label.equals("end")) {
 					System.out.println("Did not find start or end, Skipping this entry");
 					continue;
@@ -446,7 +446,7 @@ public class ActivityFeatureExtractor {
 				s = br.readLine();
 				if(s==null) break;
 				tokens = s.split(",");
-				String activity = tokens[2].trim().toLowerCase();
+				String activity = tokens[4].trim().toLowerCase();
 				activities.add(activity);
 
 				timeList.add(timeInMillis);
