@@ -5,7 +5,7 @@
 1413394677446,890,Activity Recognition,Is it the start or an end of the activity?,Start
 1413394677450,890,Activity Recognition,What type of activity are you performing?,Driving
 1413395307180,891,Activity Recognition,Is it the start or an end of the activity?,End
-1413395307183,891,Activity Recognition,Is it the start or an end of the activity?,Driving
+1413395307183,891,Activity Recognition,What type of activity are you performing?,Driving
 1413405937671,892,Activity Recognition,Is it the start or an end of the activity?,Start
 1413405937676,892,Activity Recognition,What type of activity are you performing?,Walking
 1413406452562,894,Activity Recognition,Is it the start or an end of the activity?,End
