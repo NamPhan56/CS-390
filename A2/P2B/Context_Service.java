@@ -383,6 +383,7 @@ public class Context_Service extends Service implements SensorEventListener{
 
 			//detectSteps() is not implemented 
 			sendUpdatedStepCountToUI();
+			sendUpdatedActivityToUI();
 		}
 
 	}
