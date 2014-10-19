@@ -360,7 +360,7 @@ public class Context_Service extends Service implements SensorEventListener{
 			      double classId = ActivityClassifier.classify(features); // walking = 0.0 , stationary = 1.0, driving = 2.0
 			  
 			      //TODO: 1. The activity labels below will depend on activities in your data set
-			      String activity = null;
+			      //String activity = null;
 			      if(classId == 0.0) activity= "walking";
 			      else if(classId == 1.0) activity = "stationary";
 			      else if(classId == 2.0) activity = "driving";
