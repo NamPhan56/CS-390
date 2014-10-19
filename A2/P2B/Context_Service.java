@@ -91,8 +91,10 @@ public class Context_Service extends Service implements SensorEventListener{
 	private int stepCount = 0;
 	private double doubCount = 0.0;
 	
+	
+	// activity classifier
+	
 	private String activity = "";
-
 	//Messenger used by clients
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
 
@@ -187,6 +189,8 @@ public class Context_Service extends Service implements SensorEventListener{
 			}
 		}
 	}
+	
+
 
 	private void sendUpdatedStepCountToUI() {
 		for (int i=mClients.size()-1; i>=0; i-- ) {
@@ -204,16 +208,14 @@ public class Context_Service extends Service implements SensorEventListener{
 	
 	//for P2B
 	
-	private void sendUpdatedActivityToUI(){
+	private void sendUpdatedActivityToUI(String message){
 		for (int i=mClients.size()-1; i>=0; i-- ) {
 			try {
-				//Send Step Count
-				//send Activity
-				
-				Message msg = Message.obtain();
-				msg.obj = activity;
-				msg.what = MSG_ACTIVITY_STATUS;
-				
+				//Send Accel Values
+				Bundle b = new Bundle();
+				b.putString("activity", message);
+				Message msg = Message.obtain(null, MSG_ACTIVITY_STATUS);
+				msg.setData(b);
 				mClients.get(i).send(msg);
 
 			} catch (RemoteException e) {
@@ -364,11 +366,12 @@ public class Context_Service extends Service implements SensorEventListener{
 			      if(classId == 0.0) activity= "walking";
 			      else if(classId == 1.0) activity = "stationary";
 			      else if(classId == 2.0) activity = "driving";
-			  
+			      
 			      //TODO: 2. Send new activity label to UI
 			    }catch(Exception e){
 			      e.printStackTrace();
 			    }
+			    
 			  }
 
 			/**
@@ -381,9 +384,10 @@ public class Context_Service extends Service implements SensorEventListener{
 			doubCount += detectSteps(filtAcc[0], filtAcc[1], filtAcc[2]); 
 			stepCount = (int)doubCount;
 
-			//detectSteps() is not implemented 
+			//detectSteps() is not implemented
+		    sendUpdatedActivityToUI(activity);
 			sendUpdatedStepCountToUI();
-			sendUpdatedActivityToUI();
+		
 		}
 
 	}

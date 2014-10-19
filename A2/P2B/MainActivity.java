@@ -70,6 +70,7 @@ public class MainActivity extends Activity {
             {
             	String activity = msg.getData().getString("activity");
             	//TODO: Display activity in UI
+            	statusView.setText(activity);
             	break;
             }
             case Context_Service.MSG_STEP_COUNTER:
