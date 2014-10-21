@@ -2,7 +2,7 @@ package edu.umass.cs.accelerometer;
 
 public class ActivityClassifier {
 
-	  private static double RtoP(double []R, int j) {
+	private static double RtoP(double []R, int j) {
 	    double Rcenter = 0;
 	    for (int i = 0; i < R.length; i++) {
 	      Rcenter += R[i];
@@ -98,181 +98,181 @@ public class ActivityClassifier {
 	}
 	class ActivityClassifier_0_0 {
 	  public static double classify(Object[] i) {
-	    /* yFFT3 */
-	    if (i[14] == null) { return 0.2012195121951229; } else if (((Double)i[14]).doubleValue() <= 9.743825015918528) { return -1.4656488549618325; } else { return 2.100000000000001; }
+	    /* speedFFT1 */
+	    if (i[30] == null) { return 0.6828358208955191; } else if (((Double)i[30]).doubleValue() <= 63.89712066112715) { return -1.222748815165876; } else { return 2.787958115183244; }
 	  }
 	}
 	class ActivityClassifier_0_1 {
 	  public static double classify(Object[] i) {
-	    /* speedFFT3 */
-	    if (i[32] == null) { return -0.27436672907948606; } else if (((Double)i[32]).doubleValue() <= 20.264852587110564) { return -1.229102616139981; } else { return 0.7276387049646967; }
+	    /* yFFT3 */
+	    if (i[14] == null) { return -0.020504215258524933; } else if (((Double)i[14]).doubleValue() <= 7.621705865275975) { return -1.189713976722531; } else { return 0.6426240028626409; }
 	  }
 	}
 	class ActivityClassifier_0_2 {
 	  public static double classify(Object[] i) {
-	    /* energyFFT1 */
-	    if (i[36] == null) { return -0.17281698129389073; } else if (((Double)i[36]).doubleValue() <= 324.90549330499596) { return 0.3186493261162764; } else { return -1.834081901006792; }
+	    /* yDistance */
+	    if (i[17] == null) { return 0.018451135208785347; } else if (((Double)i[17]).doubleValue() <= 2529110.470827855) { return 0.3458149093452575; } else { return -1.5316365280695063; }
 	  }
 	}
 	class ActivityClassifier_0_3 {
 	  public static double classify(Object[] i) {
-	    /* energyXYMean */
-	    if (i[40] == null) { return 0.03404252508477092; } else if (((Double)i[40]).doubleValue() <= 1.8641226469678576) { return -1.4694354531361462; } else { return 0.466902899441856; }
+	    /* yDistance */
+	    if (i[17] == null) { return -0.03510978304448678; } else if (((Double)i[17]).doubleValue() <= 453304.4394975098) { return -1.2597577298094895; } else { return 0.33542229244937; }
 	  }
 	}
 	class ActivityClassifier_0_4 {
 	  public static double classify(Object[] i) {
-	    /* energyXYDev */
-	    if (i[41] == null) { return -0.11615768707092147; } else if (((Double)i[41]).doubleValue() <= 2.362612196747107) { return 0.21237017130518887; } else { return -2.511398086108125; }
+	    /* zCrossRate */
+	    if (i[20] == null) { return -0.18198857790710868; } else if (((Double)i[20]).doubleValue() <= 0.13269794721407624) { return 0.8275492725988489; } else { return -0.5555387575842152; }
 	  }
 	}
 	class ActivityClassifier_0_5 {
 	  public static double classify(Object[] i) {
-	    /* energyFFT1 */
-	    if (i[36] == null) { return 0.032973743726380046; } else if (((Double)i[36]).doubleValue() <= 320.20110377740315) { return 0.38262745298662104; } else { return -1.4018158576328978; }
+	    /* speedFFT3 */
+	    if (i[32] == null) { return 0.04773125296830038; } else if (((Double)i[32]).doubleValue() <= 18.70699586069444) { return -0.6098025002455357; } else { return 0.586941724134694; }
 	  }
 	}
 	class ActivityClassifier_0_6 {
 	  public static double classify(Object[] i) {
-	    /* yVelocityChange */
-	    if (i[16] == null) { return -0.1117182370518003; } else if (((Double)i[16]).doubleValue() <= 26517.38497711953) { return -0.3352104309692433; } else { return 2.6273036395039395; }
+	    /* energyXYDev */
+	    if (i[41] == null) { return -0.019731116411542515; } else if (((Double)i[41]).doubleValue() <= 1.6488858960551294) { return 0.24437395491081298; } else { return -1.2371159581665205; }
 	  }
 	}
 	class ActivityClassifier_0_7 {
 	  public static double classify(Object[] i) {
-	    /* yDistance */
-	    if (i[17] == null) { return 0.02904614015706123; } else if (((Double)i[17]).doubleValue() <= 2529110.470827855) { return 0.4019091056588242; } else { return -0.8449606171194927; }
+	    /* xFFT3 */
+	    if (i[5] == null) { return 0.07528835972805717; } else if (((Double)i[5]).doubleValue() <= 10.47758218394075) { return -0.9870851776491865; } else { return 0.3992400710190631; }
 	  }
 	}
 	class ActivityClassifier_0_8 {
 	  public static double classify(Object[] i) {
-	    /* energyXYMean */
-	    if (i[40] == null) { return 0.004289619066108669; } else if (((Double)i[40]).doubleValue() <= 1.8641226469678576) { return -1.1980132112300605; } else { return 0.31137448688123676; }
+	    /* yVelocityChange */
+	    if (i[16] == null) { return -0.11037988958670374; } else if (((Double)i[16]).doubleValue() <= 26517.38497711953) { return -0.24865661750315213; } else { return 2.391210272609723; }
 	  }
 	}
 	class ActivityClassifier_0_9 {
 	  public static double classify(Object[] i) {
-	    /* energyFFT1 */
-	    if (i[36] == null) { return -0.17441611068213222; } else if (((Double)i[36]).doubleValue() <= 320.20110377740315) { return 0.11607371754666727; } else { return -1.1684585141034698; }
+	    /* xFFT4 */
+	    if (i[6] == null) { return 0.04349900311970692; } else if (((Double)i[6]).doubleValue() <= 8.4375) { return -1.1713256302516144; } else { return 0.27956411462084896; }
 	  }
 	}
 	class ActivityClassifier_1_0 {
 	  public static double classify(Object[] i) {
-	    /* yDev */
-	    if (i[10] == null) { return 0.2195121951219522; } else if (((Double)i[10]).doubleValue() <= 0.20204462340516494) { return 2.738372093023258; } else { return -1.1343750000000017; }
+	    /* speedFFT1 */
+	    if (i[30] == null) { return 0.15671641791044416; } else if (((Double)i[30]).doubleValue() <= 15.496563795790161) { return 2.660958904109584; } else { return -1.2714843749999993; }
 	  }
 	}
 	class ActivityClassifier_1_1 {
 	  public static double classify(Object[] i) {
-	    /* speedMean */
-	    if (i[27] == null) { return 0.044360480378661804; } else if (((Double)i[27]).doubleValue() <= 2.5717983073210817) { return 0.6674586537652553; } else { return -1.3561412448696986; }
+	    /* yDev */
+	    if (i[10] == null) { return -0.04422862905253056; } else if (((Double)i[10]).doubleValue() <= 0.18179101628091424) { return 1.165405720472286; } else { return -0.9020040020661717; }
 	  }
 	}
 	class ActivityClassifier_1_2 {
 	  public static double classify(Object[] i) {
-	    /* speedFFT1 */
-	    if (i[30] == null) { return -0.10904489390940543; } else if (((Double)i[30]).doubleValue() <= 10.904122209580532) { return 1.1920257491543653; } else { return -0.7225982493283103; }
+	    /* speedMean */
+	    if (i[27] == null) { return -0.06632558883767053; } else if (((Double)i[27]).doubleValue() <= 2.5717983073210817) { return 0.38081541078783065; } else { return -1.477703034640641; }
 	  }
 	}
 	class ActivityClassifier_1_3 {
 	  public static double classify(Object[] i) {
-	    /* speedCrossRate */
-	    if (i[29] == null) { return 0.0105164011053561; } else if (((Double)i[29]).doubleValue() <= 0.1455026455026455) { return 1.0138801572040081; } else { return -0.41975628673105025; }
+	    /* yVelocityChange */
+	    if (i[16] == null) { return -0.12707916836917355; } else if (((Double)i[16]).doubleValue() <= -4547.938118281485) { return -2.1023676908593782; } else { return 0.12554284535739152; }
 	  }
 	}
 	class ActivityClassifier_1_4 {
 	  public static double classify(Object[] i) {
 	    /* speedMean */
-	    if (i[27] == null) { return 0.06412002667495065; } else if (((Double)i[27]).doubleValue() <= 2.5717983073210817) { return 0.3383884026181963; } else { return -1.6955865770368896; }
+	    if (i[27] == null) { return 0.0904720817579827; } else if (((Double)i[27]).doubleValue() <= 2.5717983073210817) { return 0.3252696746506602; } else { return -1.5263778563439767; }
 	  }
 	}
 	class ActivityClassifier_1_5 {
 	  public static double classify(Object[] i) {
-	    /* energyXYDev */
-	    if (i[41] == null) { return -0.09503673792601618; } else if (((Double)i[41]).doubleValue() <= 0.7092657945054686) { return -0.4114111082115806; } else { return 0.9590841124461276; }
+	    /* xDev */
+	    if (i[1] == null) { return 0.06552759841071838; } else if (((Double)i[1]).doubleValue() <= 0.17583149732054984) { return 1.003056368799065; } else { return -0.2757993368022442; }
 	  }
 	}
 	class ActivityClassifier_1_6 {
 	  public static double classify(Object[] i) {
-	    /* xDev */
-	    if (i[1] == null) { return 0.1613411974342112; } else if (((Double)i[1]).doubleValue() <= 0.17459987136559274) { return 1.0869048229438818; } else { return -0.3301221672041479; }
+	    /* xFFT3 */
+	    if (i[5] == null) { return -0.00807497283875308; } else if (((Double)i[5]).doubleValue() <= 59.59727509073343) { return -0.17329022072770914; } else { return 2.0374569318846043; }
 	  }
 	}
 	class ActivityClassifier_1_7 {
 	  public static double classify(Object[] i) {
-	    /* yFFT1 */
-	    if (i[12] == null) { return 0.0632640228433301; } else if (((Double)i[12]).doubleValue() <= 21.932535702124085) { return 0.37992925161133173; } else { return -1.2221554302211195; }
+	    /* xDev */
+	    if (i[1] == null) { return 0.0026227049503673005; } else if (((Double)i[1]).doubleValue() <= 0.5730910343386941) { return -0.40765552154282003; } else { return 0.9162030299106314; }
 	  }
 	}
 	class ActivityClassifier_1_8 {
 	  public static double classify(Object[] i) {
-	    /* speedMean */
-	    if (i[27] == null) { return -0.06685644737708775; } else if (((Double)i[27]).doubleValue() <= 2.5717983073210817) { return 0.17328508213641625; } else { return -1.998239248397281; }
+	    /* yFFT1 */
+	    if (i[12] == null) { return 0.16887424652541283; } else if (((Double)i[12]).doubleValue() <= 23.784749127759753) { return 0.4180210843005303; } else { return -1.159039218819831; }
 	  }
 	}
 	class ActivityClassifier_1_9 {
 	  public static double classify(Object[] i) {
-	    /* energyFFT4 */
-	    if (i[39] == null) { return 0.07177581872828735; } else if (((Double)i[39]).doubleValue() <= 241.875) { return 0.3478085114923188; } else { return -0.9618715858335136; }
+	    /* speedFFT1 */
+	    if (i[30] == null) { return -0.09911788163069843; } else if (((Double)i[30]).doubleValue() <= 10.904122209580532) { return 0.8505193784090579; } else { return -0.46611405527392946; }
 	  }
 	}
 	class ActivityClassifier_2_0 {
 	  public static double classify(Object[] i) {
-	    /* zVelocityChange */
-	    if (i[25] == null) { return -0.42073170731707227; } else if (((Double)i[25]).doubleValue() <= 50110.72048901323) { return -0.7826086956521735; } else { return 1.5000000000000067; }
+	    /* xDev */
+	    if (i[1] == null) { return -0.8395522388059694; } else if (((Double)i[1]).doubleValue() <= 0.7318427964317734) { return -0.32608695652173825; } else { return -1.2729357798165086; }
 	  }
 	}
 	class ActivityClassifier_2_1 {
 	  public static double classify(Object[] i) {
-	    /* yDistance */
-	    if (i[17] == null) { return 0.2222394021860891; } else if (((Double)i[17]).doubleValue() <= 2195116.0884203864) { return -0.2534671640627539; } else { return 1.392068225860304; }
+	    /* speedMean */
+	    if (i[27] == null) { return 0.06712223370989034; } else if (((Double)i[27]).doubleValue() <= 0.5799349301302033) { return -1.1620030167339477; } else { return 0.4905672788502014; }
 	  }
 	}
 	class ActivityClassifier_2_2 {
 	  public static double classify(Object[] i) {
-	    /* speedFFT1 */
-	    if (i[30] == null) { return 0.20954305170187665; } else if (((Double)i[30]).doubleValue() <= 12.275720458197455) { return -1.0174502016302354; } else { return 0.6482941660093501; }
+	    /* energyXYDev */
+	    if (i[41] == null) { return 0.033153630459846845; } else if (((Double)i[41]).doubleValue() <= 2.362612196747107) { return -0.13142048861465289; } else { return 2.6875028446713536; }
 	  }
 	}
 	class ActivityClassifier_2_3 {
 	  public static double classify(Object[] i) {
-	    /* xDistance */
-	    if (i[8] == null) { return -0.03115984026745375; } else if (((Double)i[8]).doubleValue() <= 1406483.7773402082) { return 0.9171422130667456; } else { return -0.48037386126084175; }
+	    /* energyXYMean */
+	    if (i[40] == null) { return 0.11956966512006473; } else if (((Double)i[40]).doubleValue() <= 0.8949089180650052) { return 1.0866271187980998; } else { return -0.33094643935773294; }
 	  }
 	}
 	class ActivityClassifier_2_4 {
 	  public static double classify(Object[] i) {
-	    /* energyXYDev */
-	    if (i[41] == null) { return 0.028894711205428393; } else if (((Double)i[41]).doubleValue() <= 2.362612196747107) { return -0.18184621561831857; } else { return 2.5847226813891053; }
+	    /* zCrossRate */
+	    if (i[20] == null) { return 0.06387580503657077; } else if (((Double)i[20]).doubleValue() <= 0.13269794721407624) { return -0.9013573873521825; } else { return 0.4633728502801961; }
 	  }
 	}
 	class ActivityClassifier_2_5 {
 	  public static double classify(Object[] i) {
-	    /* xDev */
-	    if (i[1] == null) { return 0.04951171068285912; } else if (((Double)i[1]).doubleValue() <= 0.7365038972006259) { return 0.5734810563076813; } else { return -0.7204913745503337; }
+	    /* yDistance */
+	    if (i[17] == null) { return -0.07985399774287; } else if (((Double)i[17]).doubleValue() <= 2195116.0884203864) { return -0.44035518487574765; } else { return 0.9255581084422881; }
 	  }
 	}
 	class ActivityClassifier_2_6 {
 	  public static double classify(Object[] i) {
-	    /* speedMean */
-	    if (i[27] == null) { return -0.06413082681681821; } else if (((Double)i[27]).doubleValue() <= 0.5799349301302033) { return -1.3203147464061238; } else { return 0.2828418896892938; }
+	    /* energyMean */
+	    if (i[33] == null) { return 0.019770198885378076; } else if (((Double)i[33]).doubleValue() <= 10.348410815630217) { return -0.16200622277979246; } else { return 1.3560964043625052; }
 	  }
 	}
 	class ActivityClassifier_2_7 {
 	  public static double classify(Object[] i) {
-	    /* zCrossRate */
-	    if (i[20] == null) { return -0.06342274140101171; } else if (((Double)i[20]).doubleValue() <= 0.1905241935483871) { return -0.6667247814781703; } else { return 0.36777047470733615; }
+	    /* xDev */
+	    if (i[1] == null) { return -0.056273171836569595; } else if (((Double)i[1]).doubleValue() <= 0.6287544144948185) { return 0.5314250035852871; } else { return -0.6550502196235294; }
 	  }
 	}
 	class ActivityClassifier_2_8 {
 	  public static double classify(Object[] i) {
-	    /* xFFT1 */
-	    if (i[3] == null) { return 0.04140366013271417; } else if (((Double)i[3]).doubleValue() <= 19.88895454839775) { return 0.6992609461626793; } else { return -0.4760140909157381; }
+	    /* yFFT3 */
+	    if (i[14] == null) { return -0.06195853104945825; } else if (((Double)i[14]).doubleValue() <= 24.08245247253936) { return -0.314059159937422; } else { return 1.1620052783391381; }
 	  }
 	}
 	class ActivityClassifier_2_9 {
 	  public static double classify(Object[] i) {
-	    /* yFFT3 */
-	    if (i[14] == null) { return 0.04900762194186059; } else if (((Double)i[14]).doubleValue() <= 24.08245247253936) { return -0.2065996461323469; } else { return 0.9227487513672129; }
+	    /* speedFFT1 */
+	    if (i[30] == null) { return 0.048091207740085365; } else if (((Double)i[30]).doubleValue() <= 7.723607827579974) { return -1.1137719642815855; } else { return 0.22495323453384952; }
 	  }
 	}

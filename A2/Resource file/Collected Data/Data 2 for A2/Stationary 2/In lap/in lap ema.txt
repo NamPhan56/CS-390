@@ -1,0 +1,4 @@
+1413811073566,1027,Activity Recognition,Is it the start or an end of the activity?,Start
+1413811073569,1027,Activity Recognition,What type of activity are you performing?,Stationary
+1413811428091,1028,Activity Recognition,Is it the start or an end of the activity?,End
+1413811428094,1028,Activity Recognition,What type of activity are you performing?,Stationary
