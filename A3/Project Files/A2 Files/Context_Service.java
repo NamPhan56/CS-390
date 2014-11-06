@@ -128,16 +128,16 @@ public class Context_Service extends Service implements SensorEventListener{
 				showNotification();
 				//Set up filter
 				//Following sets up smoothing filter from mcrowdviz
-				int SMOOTH_FACTOR = 1;
-				filter = new Filter(SMOOTH_FACTOR);
+				filter = new Filter(1);
 				//OR Use Butterworth filter from mcrowdviz
 				//double CUTOFF_FREQUENCY = 0.3;
 				//filter = new Filter(CUTOFF_FREQUENCY);
 				stepCount = 0;
 				doubCount = 0;
+				changeList = new ArrayList<Double>();
 				//Set up orienter 
 				orienter = new ReorientAxis(); 
-				long WINDOW_IN_MILLISECONDS = 5000; //5seconds
+				//long WINDOW_IN_MILLISECONDS = 5000; //5seconds
 				//Set up a feature extractor that extracts features every 5 seconds
 				extractor = new ActivityFeatureExtractor(5000);
 				break;
@@ -150,11 +150,7 @@ public class Context_Service extends Service implements SensorEventListener{
 				showNotification();
 				//Free filter and step detector
 				filter = null;
-				if(!changeList.isEmpty()){
-					for(Double a : changeList){
-						changeList.remove(0);
-					}
-				}
+				changeList = null;
 				orienter = null; 
 				extractor = null;
 				break;

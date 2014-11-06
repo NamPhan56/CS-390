@@ -116,10 +116,13 @@ public class MainActivity extends Activity {
 
 		private void setImage(String label) {
 			// TODO Auto-generated method stub
-			switch(label){
-				default:
-					break;
-			}
+			ImageView image = activityView;
+	    	if(label.equals("STATIONARY"))
+	    		image.setImageResource(R.drawable.stat);
+	    	else if(label.equals("WALKING"))
+	    		image.setImageResource(R.drawable.walk);
+	    	else if(label.equals("DRIVE"))
+	    		image.setImageResource(R.drawable.drive);
 		}
 	}
 
@@ -167,6 +170,7 @@ public class MainActivity extends Activity {
 		accelZView = (TextView) findViewById(R.id.AccelZView);
 		statusView.setText("Service Not Bound");
 
+		 vizButton = (Button) findViewById(R.id.VisualizeButton);
 		//Start Background Service if not already started
 		if(!Context_Service.isRunning()) {
 			Intent cssBg = new Intent(activity,Context_Service.class);

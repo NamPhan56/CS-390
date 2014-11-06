@@ -90,10 +90,10 @@ public class Context_Service extends Service implements SensorEventListener{
 	 */
 	private int stepCount = 0;
 	private double doubCount = 0.0;
-	
-	
+
+
 	// activity classifier
-	
+
 	private String activity = "";
 	//Messenger used by clients
 	final Messenger mMessenger = new Messenger(new IncomingHandler());
@@ -120,16 +120,16 @@ public class Context_Service extends Service implements SensorEventListener{
 				showNotification();
 				//Set up filter
 				//Following sets up smoothing filter from mcrowdviz
-				int SMOOTH_FACTOR = 1;
-				filter = new Filter(SMOOTH_FACTOR);
+				filter = new Filter(1);
 				//OR Use Butterworth filter from mcrowdviz
 				//double CUTOFF_FREQUENCY = 0.3;
 				//filter = new Filter(CUTOFF_FREQUENCY);
 				stepCount = 0;
 				doubCount = 0;
+				changeList = new ArrayList<Double>();
 				//Set up orienter 
 				orienter = new ReorientAxis(); 
-				long WINDOW_IN_MILLISECONDS = 5000; //5seconds
+				//long WINDOW_IN_MILLISECONDS = 5000; //5seconds
 				//Set up a feature extractor that extracts features every 5 seconds
 				extractor = new ActivityFeatureExtractor(5000);
 				break;
@@ -137,16 +137,12 @@ public class Context_Service extends Service implements SensorEventListener{
 			case MSG_STOP_ACCELEROMETER:
 			{
 				isAccelRunning = false;
-				mSensorManager.unregisterListener(sInstance, mAccelerometer);
+				mSensorManager.unregisterListener(sInstance);
 				sendMessageToUI(MSG_ACCELEROMETER_STOPPED);
 				showNotification();
 				//Free filter and step detector
 				filter = null;
-				if(!changeList.isEmpty()){
-					for(Double a : changeList){
-						changeList.remove(0);
-					}
-				}
+				changeList = null;
 				orienter = null; 
 				extractor = null;
 				break;
@@ -189,7 +185,7 @@ public class Context_Service extends Service implements SensorEventListener{
 			}
 		}
 	}
-	
+
 
 
 	private void sendUpdatedStepCountToUI() {
@@ -205,17 +201,14 @@ public class Context_Service extends Service implements SensorEventListener{
 			}
 		}
 	}
-	
+
 	//for P2B
-	
-	private void sendUpdatedActivityToUI(String message){
+
+	private void sendUpdatedActivityToUI(){
 		for (int i=mClients.size()-1; i>=0; i-- ) {
 			try {
-				//Send Accel Values
-				Bundle b = new Bundle();
-				b.putString("activity", message);
-				Message msg = Message.obtain(null, MSG_ACTIVITY_STATUS);
-				msg.setData(b);
+				//Send Step Count
+				Message msg = Message.obtain(null, MSG_STEP_COUNTER,stepCount,0);
 				mClients.get(i).send(msg);
 
 			} catch (RemoteException e) {
@@ -344,35 +337,11 @@ public class Context_Service extends Service implements SensorEventListener{
 		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 			float accel[] = event.values;
 			sendAccelValuesToUI(accel[0], accel[1], accel[2]);
-			
+
 			long time = event.timestamp/1000000; //convert time to milliseconds from nanoseconds
-			  //Orient accelerometer
-			  double ortAcc[] = 
-			    orienter.getReorientedValues(accel[0], accel[1], accel[2]);
-			  
-			  //Extract Features now 
-			  Double features[] = extractor.extractFeatures(time, ortAcc[0], ortAcc[1],ortAcc[2], accel[0], accel[1], accel[2]);
-			  
-			  //Feature vector is not null only when it has buffered
-			  //at least 5 seconds of data
-			  
-			  if(features!=null) {
-			    //Classify 
-			    try{
-			      double classId = ActivityClassifier.classify(features); // walking = 0.0 , stationary = 1.0, driving = 2.0
-			  
-			      //TODO: 1. The activity labels below will depend on activities in your data set
-			      //String activity = null;
-			      if(classId == 0.0) activity= "walking";
-			      else if(classId == 1.0) activity = "stationary";
-			      else if(classId == 2.0) activity = "driving";
-			      
-			      //TODO: 2. Send new activity label to UI
-			    }catch(Exception e){
-			      e.printStackTrace();
-			    }
-			    
-			  }
+
+			//Feature vector is not null only when it has buffered
+			//at least 5 seconds of data
 
 			/**
 			 * TODO: Step Detection
@@ -383,12 +352,32 @@ public class Context_Service extends Service implements SensorEventListener{
 
 			doubCount += detectSteps(filtAcc[0], filtAcc[1], filtAcc[2]); 
 			stepCount = (int)doubCount;
-
-			//detectSteps() is not implemented
-		    sendUpdatedActivityToUI(activity);
 			sendUpdatedStepCountToUI();
-		
+			//detectSteps() is not implemented
+			//Orient accelerometer
+			double ortAcc[] = orienter.getReorientedValues(accel[0], accel[1], accel[2]);
+
+			//Extract Features now 
+			Double features[] = extractor.extractFeatures(time, ortAcc[0], ortAcc[1],ortAcc[2], accel[0], accel[1], accel[2]);
+
+			if(features!=null) {
+				//Classify 
+				try{
+					double classId = ActivityClassifier.classify(features); // walking = 0.0 , stationary = 1.0, driving = 2.0
+
+					//TODO: 1. The activity labels below will depend on activities in your data set
+					//String activity = null;
+					if(classId == 0.0) activity= "walking";
+					else if(classId == 1.0) activity = "stationary";
+					else if(classId == 2.0) activity = "driving";
+					sendUpdatedActivityToUI();
+					//TODO: 2. Send new activity label to UI
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
 		}
+
 
 	}
 
@@ -408,8 +397,8 @@ public class Context_Service extends Service implements SensorEventListener{
 		double th = Math.sqrt(Math.pow(x,2) + Math.pow(y, 2) + Math.pow(z, 2));
 		double maxThreshold = 0.60; // 0.621
 		double minThreshold = 0.54; // 0.51
-
-		if(changeList.size() < changeSize){
+		int size = changeList.size();
+		if(size < changeSize){
 			changeList.add(new Double(th));
 		}
 		else{

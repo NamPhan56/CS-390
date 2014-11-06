@@ -357,7 +357,7 @@ public class Context_Service extends Service implements SensorEventListener{
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		// TODO Auto-generated method stub
-		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+		if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 			
 			float accel[] = event.values;
 			sendAccelValuesToUI(accel[0], accel[1], accel[2]);
