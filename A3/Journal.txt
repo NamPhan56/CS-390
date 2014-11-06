@@ -1,0 +1,21 @@
+Journal: 
+
+Problems
+hm... had some problems with setup, specifically referencing R variables.
+Seems like this is a problem for images as well, which needs to be declared and instanitated in the drawable class.
+
+Working
+Fixed! R.java needs to be ran in order for it to declare and instantiate variables.
+
+
+Notes
+playing around with main.xml is pretty kewl.
+okay now all setup is done!
+we need to add 4 more visualizations to the current 4 which are the MyActivities Icons.
+Because our project used running, driving, and sitting, I will go and find icons for that. 
+Icons aren't important right now, I need to find a way to set up image switching.
+maybe use a case-switch for images
+apparently, java 1.6 won't let me use case-switches
+apparenlty java 1.7 won't compile on anything lower than Android 4.4 (KitKat)
+
+
