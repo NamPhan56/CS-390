@@ -1,4 +1,4 @@
-Journal: 
+Journal:
 
 Problems
 hm... had some problems with setup, specifically referencing R variables.
