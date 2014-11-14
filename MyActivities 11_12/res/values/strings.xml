@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="data_collect">Audio Collection</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="speech">Speech</string>
+    <string name="status_speech">Speech Status</string>
+    <string name="app_name">My Activities</string>
+    <string name="walking">Walking</string>
+    <string name="stat">Stationary</string>
+    <string name="jumping">Jumping</string>
+    <string name="mm">mm</string>
+    <string name="tictac">tictac</string>
+    <string name="jello">jello</string>
+    <string name="apple">apple</string>
+    <string name="carrot">carrot</string>
+    <string name="raisins">raisins</string>
+    	<!-- Strings shown in UI  -->  
+    <string name="status">Status</string>
+    <string name="accel">Accelerometer</string>
+    <string name="activity">Activity</string>
+    <string name="steps">Steps</string>
+    <string name="nullvalue">&#8212;.&#8212;&#8212;</string>
+    <string name="x">X</string>
+    <string name="y">Y</string>
+    <string name="z">Z</string>
+    
+    <string name="visualize">Visualize</string>
+    <string name="action_pick">Pick</string>
+    
+    <string name="StatusSpeechView">Speech Status View</string>
+    
+</resources>
