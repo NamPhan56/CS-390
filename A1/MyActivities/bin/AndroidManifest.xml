@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.umass.cs.client"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="4.3" >
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="13" />
+        android:targetSdkVersion="20" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

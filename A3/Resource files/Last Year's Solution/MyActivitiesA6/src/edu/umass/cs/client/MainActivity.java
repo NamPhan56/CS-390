@@ -1,8 +1,16 @@
 package edu.umass.cs.client;
 
+
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Calendar;
+
+import edu.umass.cs.client.widget.ContextImageWidget;
 import android.annotation.SuppressLint;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,13 +23,15 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-import edu.umass.cs.client.widget.ContextImageWidget;
-import android.widget.ImageView;
 
 /**
  * <p>The first activity/UI visible upon launching the application
@@ -29,18 +39,13 @@ import android.widget.ImageView;
  * @author CS390MB
  * 
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
     
 	
 	/** 
 	 * Variable to check if accelerometer is running
 	 */
 	private boolean accelStarted = false;
-	
-	/** 
-	 * Variable to check if microphone is running
-	 */
-	private boolean microStarted = false;
 	
 	/**
 	 * Instance of this activity
@@ -51,12 +56,12 @@ public class MainActivity extends Activity {
 	/*
 	 * Various UI components 
 	 */
-	private TextView accelXView, accelYView, accelZView, Vis1View;
-	private TextView statusView, stepsView, statusSpeechView;
-	private CompoundButton accelButton;
-	private CompoundButton microButton;
+	private TextView accelXView, accelYView, accelZView;
+	private TextView statusView, stepsView;
 	private ImageView activityView;
+	private CompoundButton accelButton;
 	private Button vizButton;
+	
 	/**
 	 * Messenger service for exchanging messages with the background service
 	 */
@@ -115,24 +120,6 @@ public class MainActivity extends Activity {
             	}
             	break;
             }
-            case Context_Service.MSG_MICROPHONE_STARTED:
-            {
-            	if(microButton!=null) {
-            		microButton.setChecked(true);
-            		microStarted = true;
-            		statusSpeechView.setText("Microphone Started");
-            	}
-            	break;
-            }
-            case Context_Service.MSG_MICROPHONE_STOPPED:
-            {
-            	if(microButton!=null) {
-            		microButton.setChecked(false);
-            		microStarted = false;
-            		statusSpeechView.setText("Microphone Stopped");
-            	}
-            	break;
-            }
             default:
                 super.handleMessage(msg);
             }
@@ -167,34 +154,32 @@ public class MainActivity extends Activity {
     /* Invoked when an activity is created
      * @see android.app.Activity#onCreate(android.os.Bundle)
      */
-
+    @Override
     public void onCreate(Bundle savedInstanceState) {
     	
     	activity = this;
     	super.onCreate(savedInstanceState);
         //Set Layout
         setContentView(R.layout.main);
-
+        
         //Setting up text views
         statusView = (TextView) findViewById(R.id.StatusView);
-        statusSpeechView = (TextView) findViewById(R.id.StatusView);
         stepsView = (TextView) findViewById(R.id.StepCountView);
         activityView = (ImageView) findViewById(R.id.ActivityImageView);
         accelXView = (TextView) findViewById(R.id.AccelXView);
         accelYView = (TextView) findViewById(R.id.AccelYView);
         accelZView = (TextView) findViewById(R.id.AccelZView);
-        statusSpeechView.setText("test");
         statusView.setText("Service Not Bound");
         
         
-        vizButton = (Button)findViewById(R.id.VizualizeButton);
+        vizButton = (Button) findViewById(R.id.VizualizeButton);
         
         //Start Background Service if not already started
         if(!Context_Service.isRunning()) {
         	Intent cssBg = new Intent(activity,Context_Service.class);
     		startService(cssBg);
         }
-
+        
         
         //Bind to the service if it is already running
         bindToServiceIfIsRunning();
@@ -203,6 +188,7 @@ public class MainActivity extends Activity {
         accelStarted = false;
         if(Context_Service.isAccelerometerRunning())
         	accelStarted = true;
+                
         
         //Set the buttons and the text accordingly
         accelButton = (ToggleButton) findViewById(R.id.StartButton);
@@ -220,34 +206,9 @@ public class MainActivity extends Activity {
         		}
         );
         
-      //Determine if the microphone is on
-        microStarted = false;
-        if(Context_Service.isMicrophoneRunning())
-        	microStarted = true;
-        
-        
-        //Set the buttons and the text accordingly
-        microButton = (ToggleButton) findViewById(R.id.StartButton);
-        microButton.setChecked(microStarted);
-        microButton.setOnCheckedChangeListener(
-        		new OnCheckedChangeListener() {
-        		    public void onCheckedChanged(CompoundButton btn,boolean isChecked) {
-        		    	microStarted = Context_Service.isMicrophoneRunning();
-        		    	if(!microStarted)
-        		    		startMicrophone();
-        		    	else
-        		    		stopMicrophone();
-        		    }
-        		}
-        );
-        
-      //Determine if the microphone is on TODO: add microstarted to contextservice
-        microStarted = false;
-        if(Context_Service.isMicrophoneRunning())
-        	microStarted = true;
-        
         vizButton.setOnClickListener(new OnClickListener() {
 			
+			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(),ContextActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -256,8 +217,6 @@ public class MainActivity extends Activity {
 		});
         
     }
-        
-       
     
     /**
      * Binds this activity to the service if the service is already running
@@ -304,16 +263,20 @@ public class MainActivity extends Activity {
     	accelZView.setText(text);
     }
     
+   
+    /**
+     * Display Activity Image
+     * @param label
+     */
     public void setImage(String label){
     	ImageView image = activityView;
-    	if(label.equals("stationary"))
+    	if(label.equals("STATIONARY"))
     		image.setImageResource(R.drawable.stat);
-    	else if(label.equals("walking"))
-    		image.setImageResource(R.drawable.walking);
-    	else if(label.equals("jumping"))
-    		image.setImageResource(R.drawable.jumping);
+    	else if(label.equals("WALKING"))
+    		image.setImageResource(R.drawable.walk);
+    	else if(label.equals("DRIVE"))
+    		image.setImageResource(R.drawable.drive);
     }
-    
     
     @Override
     public void onBackPressed() {
@@ -384,30 +347,4 @@ public class MainActivity extends Activity {
     		sendMessageToService(Context_Service.MSG_STOP_ACCELEROMETER);
     	}
     }
-
-/**
- * Sends Microphone Start Request
- */
-private void startMicrophone() {
-	if(!mIsBound) {
-		doBindService();
-		//In this case, start accelerometer won't work because service is not bound
-		accelButton.setChecked(false);
-	}
-	if(mIsBound) {
-		sendMessageToService(Context_Service.MSG_START_MICROPHONE);
-	}
-}
-
-/**
- * Sends Accelerometer Stop Request
- */
-private void stopMicrophone() {
-	if(!mIsBound) {
-		doBindService();
-	}
-	if(mIsBound) {
-		sendMessageToService(Context_Service.MSG_STOP_MICROPHONE);
-	}
-}
 }
