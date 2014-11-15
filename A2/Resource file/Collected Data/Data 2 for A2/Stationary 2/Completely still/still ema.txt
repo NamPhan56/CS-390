@@ -1,4 +1,0 @@
-1413808317610,1024,Activity Recognition,Is it the start or an end of the activity?,Start
-1413808317613,1024,Activity Recognition,What type of activity are you performing?,Stationary
-1413808425370,1025,Activity Recognition,Is it the start or an end of the activity?,End
-1413808425373,1025,Activity Recognition,What type of activity are you performing?,Stationary
