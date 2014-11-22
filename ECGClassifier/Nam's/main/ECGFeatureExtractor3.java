@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ECGFeatureExtractor2 {
+public class ECGFeatureExtractor3 {
 
 
 
@@ -31,7 +31,7 @@ public class ECGFeatureExtractor2 {
 	 * Constructor for the extractor
 	 * @param WINDOW window size in milliseconds
 	 */
-	public ECGFeatureExtractor2(long WINDOW) {
+	public ECGFeatureExtractor3(long WINDOW) {
 		WINDOW_IN_MILLISEC = WINDOW;
 	}
 
@@ -74,7 +74,7 @@ public class ECGFeatureExtractor2 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex)[1])  + "changed slope to: " + slope);
+				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex)[1])  + " changed slope to: " + slope);
 
 				
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
@@ -150,7 +150,7 @@ public class ECGFeatureExtractor2 {
 		}
 	}
 
-	 void generateArffFile(String inputDir){
+	void generateArffFile(String inputDir){
 		String arffFile = inputDir;
 		String featureNames[] = {"time,ECGValue,rrInterval"};
 
@@ -207,7 +207,7 @@ public class ECGFeatureExtractor2 {
 			break;
 
 		}
-		ECGFeatureExtractor3 ecgfe = new ECGFeatureExtractor3(100); //calculated window size to be about 2-5 r peaks per window
+		ECGFeatureExtractor2 ecgfe = new ECGFeatureExtractor2(100); //calculated window size to be about 2-5 r peaks per window
 		ecgfe.computeRRintervals(INPUT_DIR);
 		ecgfe.generateArffFile(INPUT_DIR2);
 	}
