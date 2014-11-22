@@ -74,11 +74,10 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex+2)[1]) + " changed slope to: " + slope);
+				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex-1)[1]) + " changed slope to: " + slope);
 
-				
-				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
-				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
+				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
+				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex-1));
 				startingPeakIndex+=1;
 				//set currentECGval to the next value to be compared
 			}
