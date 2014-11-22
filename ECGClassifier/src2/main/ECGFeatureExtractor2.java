@@ -8,9 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,8 +23,8 @@ public class ECGFeatureExtractor2 {
 	//LinkedLists to keep accelerometer readings for a window
 	private LinkedList<Long> rrIntervals = new LinkedList<Long>();
 	private LinkedList<Long> timeVector = new LinkedList<Long>();
-	private CopyOnWriteArrayList<String[]> peaksList = new CopyOnWriteArrayList<String[]>();
-	private static int currentIndex = 0;
+	private List<String[]> peaksList = new ArrayList<String[]>();
+	private static int startingPeakIndex = 0;
 	private long WINDOW_IN_MILLISEC; 
 	private double lastECGValue = 0, lastRRinterval = 0;
 
@@ -35,12 +37,13 @@ public class ECGFeatureExtractor2 {
 	}
 
 	public void computeRRintervals(String inputDir) throws FileNotFoundException{
-		int iteratingIndex = 0;
-
+		int startingPeakIndex = 0;
+		long rrInt=0;
 		boolean isChanged = false;
 		boolean isPositive = true; //assume positive slope to begin with
 		boolean slopIsPositive = true; // 0 = none, 1 = pos, -1 = neg
 		double currentECGval = -1;
+
 		//used for reading the file
 		Scanner br = new Scanner(new File(inputDir));
 
@@ -50,39 +53,59 @@ public class ECGFeatureExtractor2 {
 		while(br.hasNext()) {
 			peaksList.add(br.nextLine().split(","));
 		}
-
+		int dynamicPeakListSize = peaksList.size();
+		
 		//infinite loop! wee!
-		while(currentIndex < peaksList.size() ){
-			//sets the first ECGval to the first item in the set
-			currentECGval = Double.parseDouble(peaksList.get(currentIndex)[1]);
-			//finds the beginning slope
-			isPositive = (currentECGval < Double.parseDouble(peaksList.get(currentIndex+1)[1]));
-			//iterate through all objects in peaksList until it finds a change in slope
+		//for each starting value of "u" and "n" peaks
+		while(true){ //to avoid array modification errors
 			
-			for(String[] sa : peaksList){
-				
-				//if slope is changed...
-				if(isPositive != (currentECGval < Double.parseDouble(sa[1]))){
-					isChanged = true;
-					break;
-				}
-				if(!isChanged){ //if slope is not changed remove until you hit a changed slope
-					peaksList.remove(iteratingIndex);
-					System.out.println("removing: " + iteratingIndex + "\n because:" + currentECGval + " less than " + Double.parseDouble(sa[1]) + " is " + isPositive);
-					//iteratingIndex--; // to account for size being changed
-				}
-
-				iteratingIndex++;
+			if(startingPeakIndex > dynamicPeakListSize-2){break;}
+			
+			//classifies the slope using ecg values: (start, oneAfter)
+			isPositive = classifySlope(Double.parseDouble(peaksList.get(startingPeakIndex)[1]), Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]));
+			
+			//if slope is changed... break out
+			if(isPositive != (currentECGval < Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]))){
+				isChanged = true;
+				//once we found add next value of the training data into the list
+				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
+				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
+				startingPeakIndex++;
+				//set currentECGval to the next value to be compared
 			}
-			currentIndex++;
-			System.out.println("currentIndex: " + currentIndex + " out of " + peaksList.size());
-			iteratingIndex = 0;
 
+			//first n values from the list until you hit two that suggests a change in slope
+			if(!isChanged){
+				peaksList.remove(startingPeakIndex);
+				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
+				//System.out.println("removing: " + iteratingIndex + "\n because:" + currentECGval + " less than " + Double.parseDouble(sa[1]) + " is " + isPositive);
+			}
+			dynamicPeakListSize = peaksList.size(); //updating var with new size
+
+			//break out of inner while loop once we hit the end of the array
+			isChanged = false; //resets isChanged
+			startingPeakIndex++;
+
+			//System.out.println("currentIndex: " + startingPeakIndex + " out of " + peaksList.size());
 		}
 		System.out.println("broke out of while loop");
-
+		//needs to now filter out which peaks are real and which are false.
+		// add them rrIntervals which are a list of longs
+		
+		// for now, adding all peaks into the list
+		for(int i=0;i<peaksList.size()-2; i+=2){
+			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) -  getTimeInMillis(peaksList.get(i+1)[0]));
+			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
+			rrIntervals.add(rrInt);
+		}
 	} // end of method
 
+	private boolean classifySlope(double start, double oneAfter){
+		//sets the first ECGval to the first item in the set
+		//finds the current slope
+		//System.out.println(""+ start + " < " + oneAfter + " " + isPositive );
+		return (start < oneAfter); //positive slope if true, negative slope otherwise.
+	}
 	/**
 	 * Clear values for the next window 
 	 */
@@ -108,7 +131,7 @@ public class ECGFeatureExtractor2 {
 	}
 
 	private void generateArffFile(String inputDir){
-		String arffFile = "./ecg-data.arff";
+		String arffFile = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/src2/main/ecg-data.arff";
 		String featureNames[] = {"time,ECGValue,rrInterval"};
 
 		try{
@@ -125,14 +148,17 @@ public class ECGFeatureExtractor2 {
 			bw.write("@data\n");
 
 			String s = br.readLine(); //skips the first labels
+
 			Iterator<Long>it = rrIntervals.iterator();
+			int index =0;
 			while((s=br.readLine())!=null) {
 				String tokens[] = s.split(",");
 				long time = getTimeInMillis(tokens[0]);
 				double ECGValue = Double.parseDouble(tokens[1]);
-				double rrInterval = it.next();
+				//System.out.println("index: " + index);
+				long rrInterval = it.next();
+				//index++;
 				String classType = tokens[2];
-
 				bw.write(time+" ,"+ECGValue+" ,"+rrInterval+" ,"+classType+"\n");
 			}
 			br.close();
@@ -158,9 +184,6 @@ public class ECGFeatureExtractor2 {
 			break;
 
 		}
-
-
-
 		ECGFeatureExtractor2 ecgfe = new ECGFeatureExtractor2(100); //calculated window size to be about 2-5 r peaks per window
 		ecgfe.computeRRintervals(INPUT_DIR);
 		ecgfe.generateArffFile(INPUT_DIR);
