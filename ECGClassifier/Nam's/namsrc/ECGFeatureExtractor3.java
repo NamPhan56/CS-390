@@ -51,20 +51,21 @@ public class ECGFeatureExtractor3 {
 			peaksList.add(br.nextLine().split(","));
 		}
 		int dynamicPeakListSize = peaksList.size();
-		
-		
+
+
 		double currentECGval = Double.parseDouble(peaksList.get(0)[1]);
 		double nextECGval = Double.parseDouble(peaksList.get(1)[1]);
 		//classifies the slope using ecg values: (start, oneAfter)
-		
+
 		slope = classifySlope(currentECGval, nextECGval);
-		System.out.println("starting slope: " + slope);
+
+		System.out.println("starting slope: " + slope); //which is 0
 		//infinite loop! wee!
 		//for each starting value of "u" and "n" peaks
 		while(true){ //to avoid array modification errors
-			
+
 			if(startingPeakIndex > dynamicPeakListSize-2){break;}
-			
+
 			currentECGval =  Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
 			nextECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
 
@@ -74,17 +75,17 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex-1)[1]) + " changed slope to: " + slope);
+				//System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex-1)[1]) + " changed slope to: " + slope);
 
-				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
-				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex-1));
+				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
+				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+2));
 				startingPeakIndex+=1;
 				//set currentECGval to the next value to be compared
 			}
 
 			//remove first n values from the list until you hit two that suggests a change in slope
 			if(!isChanged){
-				System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1]);
+				//System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1]);
 				peaksList.remove(startingPeakIndex);
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
 
@@ -99,15 +100,24 @@ public class ECGFeatureExtractor3 {
 		}
 		System.out.println("broke out of while loop");
 		//needs to now filter out which peaks are real and which are false.
-		// add them rrIntervals which are a list of longs
+		// add them rrIntervals which are a list of longswa
+
+
 
 		// for now, adding all peaks into the list
-		for(int i=0;i<peaksList.size()-3; i+=2){
-			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) -  getTimeInMillis(peaksList.get(i+2)[0]));
-			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
-			rrIntervals.add(rrInt);
+		//		for(int i=0;i<peaksList.size()-2; i+=2){
+		//			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
+		//			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
+		//			rrIntervals.add(rrInt);
+		//		}
+
+
+		for(int t = 1; t < 20; t++ ){
+			if(t%2 == 0){
+				System.out.println("peaking!");
+			}
+			System.out.println(peaksList.get(t)[1]);
 		}
-		br.close();
 	} // end of method
 
 	private int classifySlope(double start, double oneAfter){
@@ -150,9 +160,9 @@ public class ECGFeatureExtractor3 {
 		}
 	}
 
-	public void generateArffFile(String inputDir){
-		String arffFile = inputDir;
-		String featureNames[] = {"time,ECGValue,rrInterval"};
+	private void generateArffFile(String inputDir, String inputDirOut){
+		String arffFile = inputDirOut;
+		String featureNames[] = {"time,ECGValue,rrInterval,"};
 
 		try{
 
@@ -175,9 +185,7 @@ public class ECGFeatureExtractor3 {
 				String tokens[] = s.split(",");
 				long time = getTimeInMillis(tokens[0]);
 				double ECGValue = Double.parseDouble(tokens[1]);
-				//System.out.println("index: " + index);
 				long rrInterval = it.next();
-				//index++;
 				String classType = tokens[2];
 				bw.write(time+" ,"+ECGValue+" ,"+rrInterval+" ,"+classType+"\n");
 			}
@@ -193,10 +201,11 @@ public class ECGFeatureExtractor3 {
 		String computer = "Nam"; //"Maxine" or "Nam"
 		String INPUT_DIR = "";
 		String INPUT_DIR2 = "";
+
 		switch(computer){
 		case "Nam" :
-			INPUT_DIR = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/src2/main/ECG_Data.csv";
-			INPUT_DIR2 = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/src2/main/ecg-data.arff";
+			INPUT_DIR = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/Nam's/namsrc/ECG_Data.csv";
+			INPUT_DIR2 = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/Nam's/namsrc/ecg-data.arff";
 			break;
 		case "Maxine" : 
 			INPUT_DIR = "/Users/maxinegerhard/Documents/workspace/ECGClassifier/src/ECG_Data.csv";
@@ -209,7 +218,7 @@ public class ECGFeatureExtractor3 {
 		}
 		ECGFeatureExtractor3 ecgfe = new ECGFeatureExtractor3(100); //calculated window size to be about 2-5 r peaks per window
 		ecgfe.computeRRintervals(INPUT_DIR);
-		ecgfe.generateArffFile(INPUT_DIR2);
+		//ecgfe.generateArffFile(INPUT_DIR,INPUT_DIR2);
 	}
 
 }
