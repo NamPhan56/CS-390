@@ -1,4 +1,4 @@
-package main;
+package namsrc;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -74,12 +74,12 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex)[1])  + " changed slope to: " + slope);
+				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex+2)[1]) + " changed slope to: " + slope);
 
 				
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
 				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
-				startingPeakIndex+=2;
+				startingPeakIndex+=1;
 				//set currentECGval to the next value to be compared
 			}
 
@@ -108,6 +108,7 @@ public class ECGFeatureExtractor3 {
 			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
 			rrIntervals.add(rrInt);
 		}
+		br.close();
 	} // end of method
 
 	private int classifySlope(double start, double oneAfter){
@@ -150,7 +151,7 @@ public class ECGFeatureExtractor3 {
 		}
 	}
 
-	void generateArffFile(String inputDir){
+	public void generateArffFile(String inputDir){
 		String arffFile = inputDir;
 		String featureNames[] = {"time,ECGValue,rrInterval"};
 
@@ -207,7 +208,7 @@ public class ECGFeatureExtractor3 {
 			break;
 
 		}
-		ECGFeatureExtractor2 ecgfe = new ECGFeatureExtractor2(100); //calculated window size to be about 2-5 r peaks per window
+		ECGFeatureExtractor3 ecgfe = new ECGFeatureExtractor3(100); //calculated window size to be about 2-5 r peaks per window
 		ecgfe.computeRRintervals(INPUT_DIR);
 		ecgfe.generateArffFile(INPUT_DIR2);
 	}

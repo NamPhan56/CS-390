@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import namsrc.ECGFeatureExtractor3;
+
 public class ECGFeatureExtractor2 {
 
 
@@ -150,7 +152,7 @@ public class ECGFeatureExtractor2 {
 		}
 	}
 
-	 void generateArffFile(String inputDir){
+	 public void generateArffFile(String inputDir){
 		String arffFile = inputDir;
 		String featureNames[] = {"time,ECGValue,rrInterval"};
 
