@@ -40,7 +40,7 @@ public class ECGFeatureExtractor3 {
 		long rrInt=0;
 		boolean isChanged = false;
 		int slope = 0; // 1 = positive,0 = none, -1 = negative
-
+		int upAndDownCount = 0;
 		//used for reading the file
 		Scanner br = new Scanner(new File(inputDir));
 
@@ -100,16 +100,45 @@ public class ECGFeatureExtractor3 {
 		}
 		System.out.println("broke out of while loop");
 		//needs to now filter out which peaks are real and which are false.
-		// add them rrIntervals which are a list of longswa
+		// add them rrIntervals which are a list of longs
+		// implementing up and down peak filters
 
+		int indexCount = 0;
 
+		while(true){
 
-//		 for now, adding all peaks into the list
-				for(int i=0;i<peaksList.size()-2; i+=2){
-					rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
-					//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
-					rrIntervals.add(rrInt);
+			if(indexCount >= dynamicPeakListSize-4){ break;}
+			//for(int i=0; i<dynamicPeakListSize-2; i+=2){
+			if(classifySlope(Double.parseDouble(peaksList.get(indexCount)[1]), Double.parseDouble(peaksList.get(indexCount+1)[1])) == 1 ||
+					upAndDownCount == 1){
+				upAndDownCount=1;
+				if(classifySlope(Double.parseDouble(peaksList.get(indexCount+2)[1]), Double.parseDouble(peaksList.get(indexCount+3)[1])) == -1){
+					upAndDownCount = 2;
 				}
+				else{ // if we don't have down peak next, remove until we do
+					peaksList.remove(indexCount+2);
+					peaksList.remove(indexCount+3);
+					indexCount-=2;
+					dynamicPeakListSize = peaksList.size();
+				}
+			}
+			else{ // if we don't start on a up peak remove until we do
+				peaksList.remove(indexCount);
+				peaksList.remove(indexCount+1);
+				indexCount-=2;
+				dynamicPeakListSize = peaksList.size();
+			}
+
+			indexCount+=2;
+		}
+		
+
+		//		 for now, adding all peaks into the list
+		for(int i=0;i<peaksList.size()-2; i+=2){
+			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
+			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
+			rrIntervals.add(rrInt);
+		}
 
 	} // end of method
 
@@ -175,7 +204,7 @@ public class ECGFeatureExtractor3 {
 			String s = br.readLine(); //skips the first labels
 
 			Iterator<Long>it = rrIntervals.iterator();
-			
+
 			while((s=br.readLine())!=null) {
 				String tokens[] = s.split(",");
 				long time = getTimeInMillis(tokens[0]);
