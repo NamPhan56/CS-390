@@ -208,8 +208,8 @@ public class ECGFeatureExtractor3 {
 			INPUT_DIR2 = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/Nam's/namsrc/ecg-data.arff";
 			break;
 		case "Maxine" : 
-			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src/main/ECG_Data.csv";
-			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src/main/ecg-data.arff";
+			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ECG_Data.csv";
+			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ecg-data.arff";
 			break;
 		default : 
 			System.out.println("Please specify a computer!");
