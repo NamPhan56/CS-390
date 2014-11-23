@@ -136,9 +136,9 @@ public class ECGFeatureExtractor3 {
 		for(int i=0;i<peaksList.size()-2; i+=2){
 			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
 			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
-			//if(rrInt >= 60){
+			if(rrInt >= 60){
 				rrIntervals.add(rrInt);
-			//}
+			}
 		}
 
 	} // end of method
