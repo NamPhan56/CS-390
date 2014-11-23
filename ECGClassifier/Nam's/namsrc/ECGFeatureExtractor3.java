@@ -184,7 +184,7 @@ public class ECGFeatureExtractor3 {
 
 	private void generateArffFile(String inputDir, String inputDirOut){
 		String arffFile = inputDirOut;
-		String featureNames[] = {"time,ECGValue,rrInterval,"};
+		String featureNames[] = {"rrInterval,"};
 		int peakIndex = 0;
 		boolean goToNext = false;
 		long rrInterval = 0;
@@ -215,7 +215,7 @@ public class ECGFeatureExtractor3 {
 					peakIndex+=2;
 				}
 				String classType = tokens[2];
-				bw.write(time+" ,"+ECGValue+" ,"+rrInterval+" ,"+classType+"\n");
+				bw.write(rrInterval+" ,"+classType+"\n");
 				bw.flush();
 			}
 			br.close();
@@ -227,7 +227,7 @@ public class ECGFeatureExtractor3 {
 	}
 
 	public static void main(String args[]) throws FileNotFoundException {
-		String computer = "Nam"; //"Maxine" or "Nam"
+		String computer = "Maxine"; //"Maxine" or "Nam"
 		String INPUT_DIR = "";
 		String INPUT_DIR2 = "";
 
@@ -237,8 +237,8 @@ public class ECGFeatureExtractor3 {
 			INPUT_DIR2 = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/Nam's/namsrc/ecg-data.arff";
 			break;
 		case "Maxine" : 
-			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ECG_Data.csv";
-			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ecg-data.arff";
+			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/ECG_Data.csv";
+			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/ecg-data.arff";
 			break;
 		default : 
 			System.out.println("Please specify a computer!");
