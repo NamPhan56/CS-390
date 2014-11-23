@@ -75,7 +75,7 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				System.out.println("peaking at: " + currentECGval  + " to "+ nextECGval + " changed slope to: " + slope);
+				//System.out.println("peaking at: " + currentECGval  + " to "+ nextECGval + " changed slope to: " + slope);
 
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
 				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
@@ -156,7 +156,9 @@ public class ECGFeatureExtractor3 {
 	private void generateArffFile(String inputDir, String inputDirOut){
 		String arffFile = inputDirOut;
 		String featureNames[] = {"time,ECGValue,rrInterval,"};
-
+		int peakIndex = 0;
+		boolean goToNext = false;
+		long rrInterval = 0;
 		try{
 
 			BufferedReader br = new BufferedReader(new FileReader(inputDir));
@@ -173,14 +175,19 @@ public class ECGFeatureExtractor3 {
 			String s = br.readLine(); //skips the first labels
 
 			Iterator<Long>it = rrIntervals.iterator();
-			int index =0;
+			
 			while((s=br.readLine())!=null) {
 				String tokens[] = s.split(",");
 				long time = getTimeInMillis(tokens[0]);
 				double ECGValue = Double.parseDouble(tokens[1]);
-				long rrInterval = it.next();
+				//if we hit a time that we want...
+				if(time == getTimeInMillis(peaksList.get(peakIndex)[0])){
+					rrInterval = it.next(); //taken from 2 peaks
+					peakIndex+=2;
+				}
 				String classType = tokens[2];
 				bw.write(time+" ,"+ECGValue+" ,"+rrInterval+" ,"+classType+"\n");
+				bw.flush();
 			}
 			br.close();
 			bw.close();
