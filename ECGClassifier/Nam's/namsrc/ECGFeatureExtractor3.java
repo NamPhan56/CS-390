@@ -113,7 +113,7 @@ public class ECGFeatureExtractor3 {
 					upAndDownCount == 1){
 				upAndDownCount=1;
 				if(classifySlope(Double.parseDouble(peaksList.get(indexCount+2)[1]), Double.parseDouble(peaksList.get(indexCount+3)[1])) == -1){
-					upAndDownCount = 2;
+					upAndDownCount = 0;
 				}
 				else{ // if we don't have down peak next, remove until we do
 					peaksList.remove(indexCount+2);
@@ -128,7 +128,7 @@ public class ECGFeatureExtractor3 {
 				indexCount-=2;
 				dynamicPeakListSize = peaksList.size();
 			}
-
+			
 			indexCount+=2;
 		}
 		
@@ -137,7 +137,9 @@ public class ECGFeatureExtractor3 {
 		for(int i=0;i<peaksList.size()-2; i+=2){
 			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
 			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
-			rrIntervals.add(rrInt);
+			if(rrInt >= 120){
+				rrIntervals.add(rrInt);
+			}
 		}
 
 	} // end of method
@@ -187,7 +189,7 @@ public class ECGFeatureExtractor3 {
 		String featureNames[] = {"rrInterval,"};
 		int peakIndex = 0;
 		boolean goToNext = false;
-		long rrInterval = 0;
+		long rrInterval = 150;
 		try{
 
 			BufferedReader br = new BufferedReader(new FileReader(inputDir));
@@ -227,7 +229,7 @@ public class ECGFeatureExtractor3 {
 	}
 
 	public static void main(String args[]) throws FileNotFoundException {
-		String computer = "Maxine"; //"Maxine" or "Nam"
+		String computer = "Nam"; //"Maxine" or "Nam"
 		String INPUT_DIR = "";
 		String INPUT_DIR2 = "";
 
@@ -237,8 +239,8 @@ public class ECGFeatureExtractor3 {
 			INPUT_DIR2 = "C:/Users/Nam Phan/Desktop/Repo/CS-390/ECGClassifier/Nam's/namsrc/ecg-data.arff";
 			break;
 		case "Maxine" : 
-			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/ECG_Data.csv";
-			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/ecg-data.arff";
+			INPUT_DIR = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ECG_Data.csv";
+			INPUT_DIR2 = "/Users/maxinegerhard/Documents/Repo/CS-390/ECGClassifier/src2/src2/main/ecg-data.arff";
 			break;
 		default : 
 			System.out.println("Please specify a computer!");
