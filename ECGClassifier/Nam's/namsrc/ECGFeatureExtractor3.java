@@ -181,7 +181,7 @@ public class ECGFeatureExtractor3 {
 				long time = getTimeInMillis(tokens[0]);
 				double ECGValue = Double.parseDouble(tokens[1]);
 				//if we hit a time that we want...
-				if(time == getTimeInMillis(peaksList.get(peakIndex)[0])){
+				if(time == getTimeInMillis(peaksList.get(peakIndex)[0]) && it.hasNext()){
 					rrInterval = it.next(); //taken from 2 peaks
 					peakIndex+=2;
 				}
