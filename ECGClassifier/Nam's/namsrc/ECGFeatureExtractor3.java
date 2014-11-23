@@ -75,20 +75,20 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				//System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex-1)[1]) + " changed slope to: " + slope);
+				System.out.println("peaking at: " + Double.parseDouble(peaksList.get(startingPeakIndex)[1]) + " changed slope to: " + slope);
 
-				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex+1)[1]);
-				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+2));
+				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
+				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
 				startingPeakIndex+=1;
 				//set currentECGval to the next value to be compared
 			}
 
 			//remove first n values from the list until you hit two that suggests a change in slope
 			if(!isChanged){
-				//System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1]);
+				System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1]);
 				peaksList.remove(startingPeakIndex);
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
-
+				startingPeakIndex--;
 			}
 			dynamicPeakListSize = peaksList.size(); //updating var with new size
 
@@ -111,13 +111,6 @@ public class ECGFeatureExtractor3 {
 		//			rrIntervals.add(rrInt);
 		//		}
 
-
-		for(int t = 1; t < 20; t++ ){
-			if(t%2 == 0){
-				System.out.println("peaking!");
-			}
-			System.out.println(peaksList.get(t)[1]);
-		}
 	} // end of method
 
 	private int classifySlope(double start, double oneAfter){
@@ -218,7 +211,7 @@ public class ECGFeatureExtractor3 {
 		}
 		ECGFeatureExtractor3 ecgfe = new ECGFeatureExtractor3(100); //calculated window size to be about 2-5 r peaks per window
 		ecgfe.computeRRintervals(INPUT_DIR);
-		//ecgfe.generateArffFile(INPUT_DIR,INPUT_DIR2);
+		ecgfe.generateArffFile(INPUT_DIR,INPUT_DIR2);
 	}
 
 }
