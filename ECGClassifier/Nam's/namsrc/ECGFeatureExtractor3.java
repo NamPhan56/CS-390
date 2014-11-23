@@ -75,7 +75,7 @@ public class ECGFeatureExtractor3 {
 				slope = classifySlope(currentECGval, nextECGval);
 				//once we found add next value of the training data into the list
 				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
-				//System.out.println("peaking at: " + currentECGval  + " to "+ nextECGval + " changed slope to: " + slope);
+				System.out.println("peaking at: " + currentECGval  + " to "+ nextECGval + " changed slope to: " + slope);
 
 				currentECGval = Double.parseDouble(peaksList.get(startingPeakIndex)[1]);
 				peaksList.add(startingPeakIndex, peaksList.get(startingPeakIndex+1));
@@ -109,8 +109,7 @@ public class ECGFeatureExtractor3 {
 
 			if(indexCount >= dynamicPeakListSize-4){ break;}
 			//for(int i=0; i<dynamicPeakListSize-2; i+=2){
-			if(classifySlope(Double.parseDouble(peaksList.get(indexCount)[1]), Double.parseDouble(peaksList.get(indexCount+1)[1])) == 1 ||
-					upAndDownCount == 1){
+			if(upAndDownCount == 1 || classifySlope(Double.parseDouble(peaksList.get(indexCount)[1]), Double.parseDouble(peaksList.get(indexCount+1)[1])) == 1){
 				upAndDownCount=1;
 				if(classifySlope(Double.parseDouble(peaksList.get(indexCount+2)[1]), Double.parseDouble(peaksList.get(indexCount+3)[1])) == -1){
 					upAndDownCount = 0;
@@ -137,9 +136,9 @@ public class ECGFeatureExtractor3 {
 		for(int i=0;i<peaksList.size()-2; i+=2){
 			rrInt = Math.abs(getTimeInMillis(peaksList.get(i)[0]) - getTimeInMillis(peaksList.get(i+2)[0]));
 			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
-			if(rrInt >= 120){
+			//if(rrInt >= 60){
 				rrIntervals.add(rrInt);
-			}
+			//}
 		}
 
 	} // end of method
@@ -189,7 +188,7 @@ public class ECGFeatureExtractor3 {
 		String featureNames[] = {"rrInterval,"};
 		int peakIndex = 0;
 		boolean goToNext = false;
-		long rrInterval = 150;
+		long rrInterval = 250;
 		try{
 
 			BufferedReader br = new BufferedReader(new FileReader(inputDir));
