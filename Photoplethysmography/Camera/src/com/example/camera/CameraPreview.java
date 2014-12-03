@@ -154,7 +154,7 @@ public class CameraPreview extends Activity implements OnClickListener{
 				//				p.setFlashMode(Parameters.FLASH_MODE_TORCH);	
 
 				// Start the preview
-				//mCamera.startPreview();
+				mCamera.startPreview();
 			} 
 			else{
 
@@ -238,7 +238,7 @@ public class CameraPreview extends Activity implements OnClickListener{
 			mPreview.switchCamera(mCamera);
 
 			// Start the preview
-			mCamera.startPreview();
+			//mCamera.startPreview();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -362,7 +362,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		if (mSupportedPreviewSizes != null) {
 			//Choose smallest Prewvie Size
 			//128x96
-			mPreviewSize = mSupportedPreviewSizes.get(mSupportedPreviewSizes.size() - 1);
+			mPreviewSize = mSupportedPreviewSizes.get(10);
 			//mPreviewSize= getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 
 			Log.i("finalwidth: ",""+mPreviewSize.width);
@@ -501,7 +501,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//ADDED: remove this: since we already initialized parameters
 		//Camera.Parameters parameters = mCamera.getParameters();
 		mCamera.setParameters(parameters);
-		mCamera.startPreview();
+		//mCamera.startPreview();
 
 		//mCamera.stopPreview();	
 		//CameraPreview myActivity = (CameraPreview) getContext();
