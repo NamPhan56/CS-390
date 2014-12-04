@@ -46,8 +46,14 @@ import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
+
+
+import edu.umass.cs.client.widget.ContextImageWidget;
+import edu.umass.cs.client.widget.ContinuousContextImageWidget;
+import edu.umass.cs.client.widget.WidgetBase;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -82,7 +88,6 @@ import android.widget.TextView;
 
 public class CameraPreview extends Activity implements OnClickListener{
 
-
 	private Preview mPreview;
 	Camera mCamera;
 	int numberOfCameras;
@@ -91,10 +96,13 @@ public class CameraPreview extends Activity implements OnClickListener{
 	boolean isMeasuring=false;
 	Button btn_startmeasure;
 	TextView txt_status,txt_result;
+	static TextView heartbeatView;
 	// The first rear facing camera
 	int defaultCameraId;
 
 	BufferedWriter bw;
+	
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +116,7 @@ public class CameraPreview extends Activity implements OnClickListener{
 		setContentView(R.layout.activity_main);
 		txt_status=(TextView)findViewById(R.id.txt_status);
 		txt_result=(TextView)findViewById(R.id.txt_result);
+		heartbeatView = (TextView) findViewById(R.id.heartbeatView);
 
 
 		//Set the buttons and the text accordingly
@@ -137,10 +146,13 @@ public class CameraPreview extends Activity implements OnClickListener{
 
 	}
 
-
+public static TextView getHeartbeatView(){
+	return heartbeatView;
+}
 
 	public void onClick(View v){
-
+//should change to visualize screen here
+		
 		//Start measuring PPG
 		if(v==btn_startmeasure){
 			Parameters p = mCamera.getParameters();
@@ -246,7 +258,15 @@ public class CameraPreview extends Activity implements OnClickListener{
 		
 	}
 
-
+	//******************************************************
+		// private void drawWidgets(){
+			// if (redValue_history == null) 
+				// redValue_history = new LinkedList<Float>();
+			// widgets[i] = new ContinuousContextImageWidget(this,-20,20,150,redValue_history);
+			// widgets[i].setTitle(STREAMS.REDVALUES.toString());
+			// widgets[i].addOrRemoveTitleViewAsNecessary();
+		   // }
+		//******************************************************
 
 
 }
@@ -270,6 +290,13 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 
 	int defaultCameraId;
+	
+	//***************************************************
+	public static enum STREAMS {REDVALUES
+	};
+	private WidgetBase[] widgets = new WidgetBase[STREAMS.values().length];
+	public static LinkedList<Float> redValue_history = new LinkedList<Float>();
+	//***************************************************
 
 	CameraPreview myActivity = (CameraPreview) getContext();
 
@@ -362,7 +389,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		if (mSupportedPreviewSizes != null) {
 			//Choose smallest Prewvie Size
 			//128x96
-			mPreviewSize = mSupportedPreviewSizes.get(10);
+			mPreviewSize = mSupportedPreviewSizes.get(11);
 			//mPreviewSize= getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 
 			Log.i("finalwidth: ",""+mPreviewSize.width);
@@ -546,10 +573,15 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	//define what the callback should do before rendering a preview frame to the screen
 	@Override  
 	public void onPreviewFrame(byte[] data, Camera camera) {  
-		//transforms NV21 pixel data into RGB pixels  
+		//transforms NV21 pixel data into RGB pixels 
+		//********************************************
+		
+		//PLEASE PUT ALGORITHM HERE AND UPDATE heartbeatCount AS THE ALGORITHM DETECTS A BEAT
+		int heartbeatCount = 0;
 
 		//TODO: most of the code will go here!
-
+		CameraPreview.getHeartbeatView().setText(""+heartbeatCount);
+		//********************************************
 		camera.addCallbackBuffer(data);
 
 		//Collect color data and store them but now replacing each frame with new frame
@@ -562,6 +594,10 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 			color = (int)Long.parseLong(hexStr, 16);
 			red = (double)(((color >> 16) & 0xFF));
+			//********************************************
+			//sends updated red values to graph in UI
+			sendUpdatedRedValuestoUI(red);
+			//********************************************
 			sum+=red;
 		}
 
@@ -592,6 +628,14 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		}
 
 	}  
+	
+	
+	public void sendUpdatedRedValuestoUI(double redValue){
+		float currentRedValue = (float)redValue;
+    	if (widgets[STREAMS.REDVALUES.ordinal()] !=null){
+    		((ContextImageWidget)widgets[STREAMS.REDVALUES.ordinal()]).history_view.add(currentRedValue);
+    	}
+	}
 
 
 	//This method writes the red pixel values in a text file and stored it in Downloads/MyPPG

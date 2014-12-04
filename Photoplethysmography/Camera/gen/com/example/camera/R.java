@@ -25,18 +25,20 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int btn_startmeasure=0x7f070005;
-        public static final int cam_preview=0x7f070004;
+        public static final int Space1=0x7f070004;
+        public static final int Space2=0x7f070006;
+        public static final int btn_startmeasure=0x7f070009;
+        public static final int cam_preview=0x7f070005;
+        public static final int heartbeatView=0x7f070007;
         public static final int resultLayout=0x7f070000;
         public static final int startLayout=0x7f070003;
-        public static final int switch_cam=0x7f070007;
+        public static final int switch_cam=0x7f07000a;
+        public static final int textView1=0x7f070008;
         public static final int txt_result=0x7f070002;
         public static final int txt_status=0x7f070001;
-        public static final int viewSwitcher1=0x7f070006;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int visualize=0x7f030001;
     }
     public static final class menu {
         public static final int camera_menu=0x7f060000;

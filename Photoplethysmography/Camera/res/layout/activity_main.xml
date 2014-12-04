@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="#ff000000"
     tools:context="com.example.camera.CameraPreview" >
@@ -22,10 +22,10 @@
             android:layout_marginLeft="40dip"
             android:padding="10dip"
             android:text="@string/status"
+            android:textColor="#ffffffff"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#ffffffff" />
-        
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/txt_result"
             android:layout_width="wrap_content"
@@ -34,38 +34,71 @@
             android:layout_centerVertical="true"
             android:padding="10dip"
             android:text=""
+            android:textColor="#ffffffff"
             android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="#ffffffff" />
+            android:textStyle="bold" />
     </RelativeLayout>
 
-    
-
-    
-     <LinearLayout
+    <RelativeLayout
         android:id="@+id/startLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/resultLayout"
-	android:orientation="vertical"        
-        >
-        
-         <FrameLayout
-             android:id="@+id/cam_preview"
-             android:layout_width="fill_parent"
-             android:layout_height="0dp"
-             android:layout_weight="1"
-             android:paddingBottom="10dip" />
-   
-          <Button
-        android:id="@+id/btn_startmeasure"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:onClick="onClick"
-        android:text="@string/start" />
-    </LinearLayout>
-    
-     
+        android:orientation="vertical" >
+
+        <Space
+            android:id="@+id/Space1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/cam_preview" />
+
+        <Space
+            android:id="@+id/Space2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/heartbeatView" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="93dp"
+            android:layout_toLeftOf="@+id/heartbeatView"
+            android:text="BPM:" />
+
+        <TextView
+            android:id="@+id/heartbeatView"
+            android:layout_width="88dp"
+            android:layout_height="102dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/textView1"
+            android:layout_marginRight="58dp"
+            android:text="TextView" />
+
+        <FrameLayout
+            android:id="@+id/cam_preview"
+            android:layout_width="99dp"
+            android:layout_height="94dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="47dp"
+            android:paddingBottom="10dip" >
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btn_startmeasure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/cam_preview"
+            android:layout_alignRight="@+id/heartbeatView"
+            android:layout_marginBottom="20dp"
+            android:onClick="onClick"
+            android:text="@string/start" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
