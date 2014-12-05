@@ -396,9 +396,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		setMeasuredDimension(width, height);
 
 		if (mSupportedPreviewSizes != null) {
-			//Choose smallest Prewvie Size
+			//Choose smallest Preview Size
 			//128x96
-			mPreviewSize = mSupportedPreviewSizes.get(11);
+			mPreviewSize = mSupportedPreviewSizes.get(11);//resolution
 			//mPreviewSize= getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 
 			Log.i("finalwidth: ",""+mPreviewSize.width);

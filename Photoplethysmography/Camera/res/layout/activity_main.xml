@@ -80,13 +80,13 @@
 
         <FrameLayout
             android:id="@+id/cam_preview"
-            android:layout_width="99dp"
-            android:layout_height="94dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
             android:layout_marginLeft="32dp"
-            android:layout_marginTop="47dp"
+            android:layout_toLeftOf="@+id/heartbeatView"
             android:paddingBottom="10dip" >
+
         </FrameLayout>
 
         <Button
