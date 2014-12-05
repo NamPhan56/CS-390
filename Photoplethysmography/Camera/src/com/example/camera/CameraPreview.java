@@ -320,6 +320,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	private int result=0;
 
 	private List<Double> redMeans = new ArrayList<Double>();
+	private List<Double> buffer = new ArrayList<Double>();
 	//private ArrayList<Float> time;
 
 
@@ -607,36 +608,40 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 
 		mean=(double)(sum/npixels);
-
+		
 		//coding begins here
 		//needs to make sure we get at least... 5 values into the list
-		redMeans.add(mean);
+		buffer.add(mean);
 		//Log.i("SUM: ",""+sum);
 		//Log.i("MEAN: ",""+mean);
 
-		//		sum=0;
+				sum=0;
 
 		//guarentees at least 5 records
-		if(redMeans.size() >=5){
-			redMeans = findAllPeaksAndDips(redMeans);
-
+		if(buffer.size() >=10){
+			System.out.println("I have >=10 items!");
+			redMeans = findAllPeaksAndDips(buffer, redMeans);
+			buffer.clear();
 			redMeans = findDipsOnly(redMeans);
+			
+			System.out.println("Size of dips only: " + redMeans.size());
 		}
-
-		//deprecated
-		//		if (frameCount<nframe && frameCount!=-1){	
-		//			meanreds[frameCount]=mean;
-		//			frameCount++;
-		//			Log.d("FILE: ","RECORDING..."+frameCount);
-		//		}
-		//		else if(frameCount==-1){
-		//			Log.d("FILE: ","DONE!");
-		//		}
-		//		else{
-		//			Log.d("FILE: ","CREATED!");
-		//			generateDATA();
-		//			frameCount=-1;
-		//		}
+		else{
+			System.out.println("less than 5 items");
+		}
+//				if (frameCount<nframe && frameCount!=-1){	
+//					meanreds[frameCount]=mean;
+//					frameCount++;
+//					Log.d("FILE: ","RECORDING..."+frameCount);
+//				}
+//				else if(frameCount==-1){
+//					Log.d("FILE: ","DONE!");
+//				}
+//				else{
+//					Log.d("FILE: ","CREATED!");
+//					generateDATA();
+//					frameCount=-1;
+//				}
 	}  
 
 	/**
@@ -645,17 +650,15 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	 * @param int startingSlope
 	 * @return List<Double> 
 	 */
-	private List<Double> findAllPeaksAndDips(List<Double> unFilteredList){
+	private List<Double> findAllPeaksAndDips(List<Double> unfilteredBuffer, List<Double>filteredList){
 		// adds all lines into arraylist as Double
-		double currentRedMeans = redMeans.get(0);
-		double nextRedMeans = redMeans.get(1);
+		double currentRedMeans = unfilteredBuffer.get(0);
+		double nextRedMeans = unfilteredBuffer.get(1);
 
 		int slope = classifySlope(currentRedMeans, nextRedMeans);
-		long rrInt=0;
 		boolean isChanged = false;
 		int startingPeakIndex = 0;
-		List<Double> uAndnPeaksOnly = unFilteredList;
-		int dynamicPeakListSize = unFilteredList.size();
+		int dynamicPeakListSize = unfilteredBuffer.size();
 
 		System.out.println("starting slope: " + slope); //which is 0
 		//infinite loop! wee!
@@ -664,41 +667,43 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 			if(startingPeakIndex > dynamicPeakListSize-2){break;}
 
-			currentRedMeans =  redMeans.get(startingPeakIndex);
-			nextRedMeans = redMeans.get(startingPeakIndex+1);
+			currentRedMeans =  unfilteredBuffer.get(startingPeakIndex);
+			nextRedMeans = unfilteredBuffer.get(startingPeakIndex+1);
 
 			//if slope is changed... break out
 			if(slope != classifySlope(currentRedMeans, nextRedMeans) && classifySlope(currentRedMeans, nextRedMeans)!= 0){
 				isChanged = true;
 				slope = classifySlope(currentRedMeans, nextRedMeans);
 				//once we found add next value of the training data into the list
-				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
 				System.out.println("peaking at: " + currentRedMeans  + " to "+ nextRedMeans + " changed slope to: " + slope);
 
-				currentRedMeans = redMeans.get(startingPeakIndex);
-				redMeans.add(startingPeakIndex, redMeans.get(startingPeakIndex+1));
+				currentRedMeans = unfilteredBuffer.get(startingPeakIndex);
+				unfilteredBuffer.add(startingPeakIndex, unfilteredBuffer.get(startingPeakIndex+1));
 				startingPeakIndex+=1;
-				//set currentECGval to the next value to be compared
+				//set currentRedMeans to the next value to be compared
 			}
 
 			//remove first n values from the list until you hit two that suggests a change in slope
 			if(!isChanged){
-				System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + redMeans.get(startingPeakIndex));
-				redMeans.remove(startingPeakIndex);
-				currentRedMeans = redMeans.get(startingPeakIndex);
+				System.out.println("removing a index: " + startingPeakIndex + "PPG: " + unfilteredBuffer.get(startingPeakIndex));
+				unfilteredBuffer.remove(startingPeakIndex);
+				currentRedMeans = unfilteredBuffer.get(startingPeakIndex);
 				startingPeakIndex--;
 			}
-			dynamicPeakListSize = redMeans.size(); //updating var with new size
+			dynamicPeakListSize = unfilteredBuffer.size(); //updating var with new size
 
 			//break out of inner while loop once we hit the end of the array
 			isChanged = false; //resets isChanged
 			startingPeakIndex++;
 
 			//System.out.println("currentIndex: " + startingPeakIndex + " out of " + peaksList.size());
-		}
+		}// while loop
 		System.out.println("broke out of while loop");
+			for(Double d : unfilteredBuffer){
+				filteredList.add(d);
+		}
 
-		return uAndnPeaksOnly;
+		return filteredList;
 
 	}
 	/**
@@ -717,7 +722,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		while(true){
 			if(indexCount >= dynamicPeakListSize-4){ break;}
 
-			if(downThenUpCount == -1 || classifySlope(dipsOnly.get(indexCount), dipsOnly.get(indexCount+1)) == -1){
+			if(downThenUpCount == 1 || classifySlope(dipsOnly.get(indexCount), dipsOnly.get(indexCount+1)) == -1){
 				downThenUpCount=1;
 				if(classifySlope(dipsOnly.get(indexCount+2),dipsOnly.get(indexCount+3)) == 1){
 					//we are going up after a dip now
