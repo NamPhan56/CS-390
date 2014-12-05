@@ -144,20 +144,18 @@ public class ECGFeatureExtractor3 {
 
 	} // end of method
 
+	/**
+	 * takes in a start and the next value and returns the slope
+	 * @param double start
+	 * @param double oneAfter
+	 * @return int slope
+	 */
 	private int classifySlope(double start, double oneAfter){
+		//finds current slope
 		int ret;
-		//sets the first ECGval to the first item in the set
-		//finds the current slope
-		//System.out.println(""+ start + " < " + oneAfter + " " + isPositive );
-		if(start > oneAfter){
-			ret = -1;
-		}
-		else if(start < oneAfter){
-			ret = 1;
-		}
-		else{
-			ret = 0;
-		}
+		if(start > oneAfter){ret = -1;}
+		else if(start < oneAfter){ret = 1;}
+		else{ret = 0;}
 		return ret; //positive slope if true, negative or no slope otherwise.
 	}
 	/**

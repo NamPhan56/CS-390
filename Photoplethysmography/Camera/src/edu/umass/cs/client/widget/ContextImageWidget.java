@@ -12,7 +12,7 @@ import android.graphics.Paint;
 import android.util.Log;
 import java.util.LinkedList;
 
-import edu.umass.cs.client.R;
+import com.example.camera.R;
 
 /**
  * ContextImageWidget.java
@@ -108,43 +108,43 @@ public class ContextImageWidget extends WidgetBase
     	container.addView(title_view, params);
     }
     
-    public void setImage(String label){
-    	if(label.equals("stat")){
-    		image_view.setImageResource(R.drawable.stat);
-    	} else if(label.equals("walking")){
-    		image_view.setImageResource(R.drawable.walking);
-    	} else if(label.equals("jumping")){
-    		image_view.setImageResource(R.drawable.jumping);
-    	}
-    }
-    
-    public void setImage(int label){
-    	if(label>=3 && label<8){//calorie range
-    		image_view.setImageResource(R.drawable.tictac);
-    	}
-    	else if(label>=8 && label<14){//calorie range
-    		image_view.setImageResource(R.drawable.mm);
-    	}
-    	else if(label>=14 && label<20){
-    		image_view.setImageResource(R.drawable.jello);
-    	}
-    	else if(label>=20 && label<35){
-    		image_view.setImageResource(R.drawable.carrot);
-    	}
-    	else if(label>=35 && label<50){
-    		image_view.setImageResource(R.drawable.apple);
-    	}
-    	else if(label>=50 && label<60){
-    		image_view.setImageResource(R.drawable.raisins);
-    	}
-    	if(label==0){
-    		image_view.setImageResource(R.drawable.stat);
-    	} else if(label==1){
-    		image_view.setImageResource(R.drawable.walking);
-    	} else if(label==2){
-    		image_view.setImageResource(R.drawable.jumping);
-    	}
-    }
+//    public void setImage(String label){
+//    	if(label.equals("stat")){
+//    		image_view.setImageResource(R.drawable.stat);
+//    	} else if(label.equals("walking")){
+//    		image_view.setImageResource(R.drawable.walking);
+//    	} else if(label.equals("jumping")){
+//    		image_view.setImageResource(R.drawable.jumping);
+//    	}
+//    }
+//    
+//    public void setImage(int label){
+//    	if(label>=3 && label<8){//calorie range
+//    		image_view.setImageResource(R.drawable.tictac);
+//    	}
+//    	else if(label>=8 && label<14){//calorie range
+//    		image_view.setImageResource(R.drawable.mm);
+//    	}
+//    	else if(label>=14 && label<20){
+//    		image_view.setImageResource(R.drawable.jello);
+//    	}
+//    	else if(label>=20 && label<35){
+//    		image_view.setImageResource(R.drawable.carrot);
+//    	}
+//    	else if(label>=35 && label<50){
+//    		image_view.setImageResource(R.drawable.apple);
+//    	}
+//    	else if(label>=50 && label<60){
+//    		image_view.setImageResource(R.drawable.raisins);
+//    	}
+//    	if(label==0){
+//    		image_view.setImageResource(R.drawable.stat);
+//    	} else if(label==1){
+//    		image_view.setImageResource(R.drawable.walking);
+//    	} else if(label==2){
+//    		image_view.setImageResource(R.drawable.jumping);
+//    	}
+//    }
 
 	@Override
 	public String getValue() {

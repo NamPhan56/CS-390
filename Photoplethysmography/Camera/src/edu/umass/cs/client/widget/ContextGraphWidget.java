@@ -20,7 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import edu.umass.cs.client.R;
+//import edu.umass.cs.client.R;
+import com.example.camera.R;
 import edu.umass.cs.client.widget.ContextImageWidget.RollingHistoryView;
 
 

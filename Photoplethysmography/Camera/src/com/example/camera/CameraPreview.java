@@ -45,9 +45,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.TimeZone;
 
 
@@ -101,7 +103,7 @@ public class CameraPreview extends Activity implements OnClickListener{
 	int defaultCameraId;
 
 	BufferedWriter bw;
-	
+
 
 
 	@Override
@@ -146,13 +148,13 @@ public class CameraPreview extends Activity implements OnClickListener{
 
 	}
 
-public static TextView getHeartbeatView(){
-	return heartbeatView;
-}
+	public static TextView getHeartbeatView(){
+		return heartbeatView;
+	}
 
 	public void onClick(View v){
-//should change to visualize screen here
-		
+		//should change to visualize screen here
+
 		//Start measuring PPG
 		if(v==btn_startmeasure){
 			Parameters p = mCamera.getParameters();
@@ -255,18 +257,18 @@ public static TextView getHeartbeatView(){
 		default:
 			return super.onOptionsItemSelected(item);
 		}
-		
+
 	}
 
 	//******************************************************
-		// private void drawWidgets(){
-			// if (redValue_history == null) 
-				// redValue_history = new LinkedList<Float>();
-			// widgets[i] = new ContinuousContextImageWidget(this,-20,20,150,redValue_history);
-			// widgets[i].setTitle(STREAMS.REDVALUES.toString());
-			// widgets[i].addOrRemoveTitleViewAsNecessary();
-		   // }
-		//******************************************************
+	// private void drawWidgets(){
+	// if (redValue_history == null) 
+	// redValue_history = new LinkedList<Float>();
+	// widgets[i] = new ContinuousContextImageWidget(this,-20,20,150,redValue_history);
+	// widgets[i].setTitle(STREAMS.REDVALUES.toString());
+	// widgets[i].addOrRemoveTitleViewAsNecessary();
+	// }
+	//******************************************************
 
 
 }
@@ -290,7 +292,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 
 	int defaultCameraId;
-	
+
 	//***************************************************
 	public static enum STREAMS {REDVALUES
 	};
@@ -317,7 +319,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	//bpm result
 	private int result=0;
 
-	
+	private List<Double> redMeans = new ArrayList<Double>();
+	//private ArrayList<Float> time;
+
 
 	double meanFiltSm, meanFiltBW;
 
@@ -575,7 +579,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	public void onPreviewFrame(byte[] data, Camera camera) {  
 		//transforms NV21 pixel data into RGB pixels 
 		//********************************************
-		
+
 		//PLEASE PUT ALGORITHM HERE AND UPDATE heartbeatCount AS THE ALGORITHM DETECTS A BEAT
 		int heartbeatCount = 0;
 
@@ -604,37 +608,176 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 		mean=(double)(sum/npixels);
 
+		//coding begins here
+		//needs to make sure we get at least... 5 values into the list
+		redMeans.add(mean);
 		//Log.i("SUM: ",""+sum);
 		//Log.i("MEAN: ",""+mean);
 
-		sum=0;
+		//		sum=0;
 
-		if (frameCount<nframe && frameCount!=-1){	
-			meanreds[frameCount]=mean;
+		//guarentees at least 5 records
+		if(redMeans.size() >=5){
+			redMeans = findAllPeaksAndDips(redMeans);
 
-
-			frameCount++;
-			Log.d("FILE: ","RECORDING..."+frameCount);
-
-		}
-		else if(frameCount==-1){
-			Log.d("FILE: ","DONE!");
-
-		}
-		else{
-			Log.d("FILE: ","CREATED!");
-			generateDATA();
-			frameCount=-1;
+			redMeans = findDipsOnly(redMeans);
 		}
 
+		//deprecated
+		//		if (frameCount<nframe && frameCount!=-1){	
+		//			meanreds[frameCount]=mean;
+		//			frameCount++;
+		//			Log.d("FILE: ","RECORDING..."+frameCount);
+		//		}
+		//		else if(frameCount==-1){
+		//			Log.d("FILE: ","DONE!");
+		//		}
+		//		else{
+		//			Log.d("FILE: ","CREATED!");
+		//			generateDATA();
+		//			frameCount=-1;
+		//		}
 	}  
-	
-	
+
+	/**
+	 * filters the list for only dips and peaks, array must have at least 3 elements in the list
+	 * @param List<Double> unFilteredList
+	 * @param int startingSlope
+	 * @return List<Double> 
+	 */
+	private List<Double> findAllPeaksAndDips(List<Double> unFilteredList){
+		// adds all lines into arraylist as Double
+		double currentRedMeans = redMeans.get(0);
+		double nextRedMeans = redMeans.get(1);
+
+		int slope = classifySlope(currentRedMeans, nextRedMeans);
+		long rrInt=0;
+		boolean isChanged = false;
+		int startingPeakIndex = 0;
+		List<Double> uAndnPeaksOnly = unFilteredList;
+		int dynamicPeakListSize = unFilteredList.size();
+
+		System.out.println("starting slope: " + slope); //which is 0
+		//infinite loop! wee!
+		//for each starting value of "u" and "n" peaks
+		while(true){ //to avoid array modification errors
+
+			if(startingPeakIndex > dynamicPeakListSize-2){break;}
+
+			currentRedMeans =  redMeans.get(startingPeakIndex);
+			nextRedMeans = redMeans.get(startingPeakIndex+1);
+
+			//if slope is changed... break out
+			if(slope != classifySlope(currentRedMeans, nextRedMeans) && classifySlope(currentRedMeans, nextRedMeans)!= 0){
+				isChanged = true;
+				slope = classifySlope(currentRedMeans, nextRedMeans);
+				//once we found add next value of the training data into the list
+				//System.out.println("Peak at index: " + startingPeakIndex + " ECGvalue: " + peaksList.get(startingPeakIndex)[1] + " slope changed to " + classifySlope(currentECGval, nextECGval));
+				System.out.println("peaking at: " + currentRedMeans  + " to "+ nextRedMeans + " changed slope to: " + slope);
+
+				currentRedMeans = redMeans.get(startingPeakIndex);
+				redMeans.add(startingPeakIndex, redMeans.get(startingPeakIndex+1));
+				startingPeakIndex+=1;
+				//set currentECGval to the next value to be compared
+			}
+
+			//remove first n values from the list until you hit two that suggests a change in slope
+			if(!isChanged){
+				System.out.println("removing a index: " + startingPeakIndex + " ECGvalue: " + redMeans.get(startingPeakIndex));
+				redMeans.remove(startingPeakIndex);
+				currentRedMeans = redMeans.get(startingPeakIndex);
+				startingPeakIndex--;
+			}
+			dynamicPeakListSize = redMeans.size(); //updating var with new size
+
+			//break out of inner while loop once we hit the end of the array
+			isChanged = false; //resets isChanged
+			startingPeakIndex++;
+
+			//System.out.println("currentIndex: " + startingPeakIndex + " out of " + peaksList.size());
+		}
+		System.out.println("broke out of while loop");
+
+		return uAndnPeaksOnly;
+
+	}
+	/**
+	 * takes in a list of only dips and peaks and returns an arrayList of only dips
+	 * list needs to be at least 5 elements long
+	 * @param List<Double>dipsAndPeaks
+	 * @return List<Double>
+	 */
+	private List<Double> findDipsOnly(List<Double> dipsAndPeaks){
+		int downThenUpCount = 0;
+		int indexCount = 0;
+		List<Double> dipsOnly;
+		dipsOnly = dipsAndPeaks; 
+		int dynamicPeakListSize = dipsAndPeaks.size();
+		//find up then down pattern
+		while(true){
+			if(indexCount >= dynamicPeakListSize-4){ break;}
+
+			if(downThenUpCount == -1 || classifySlope(dipsOnly.get(indexCount), dipsOnly.get(indexCount+1)) == -1){
+				downThenUpCount=1;
+				if(classifySlope(dipsOnly.get(indexCount+2),dipsOnly.get(indexCount+3)) == 1){
+					//we are going up after a dip now
+					downThenUpCount=0;
+				}
+				else{ // if we don't have down peak next, remove until we do
+					dipsOnly.remove(indexCount+2);
+					dipsOnly.remove(indexCount+3);
+					indexCount-=2;
+					dynamicPeakListSize = dipsOnly.size();
+				}
+			}
+			else{ // if we don't start on a up peak remove until we do
+				dipsOnly.remove(indexCount);
+				dipsOnly.remove(indexCount+1);
+				indexCount-=2;
+				dynamicPeakListSize = dipsOnly.size();
+			}
+			indexCount+=2;
+		}
+		return dipsOnly;
+	}
+
+
+	/**
+	 * not used... 
+	 */
+	private void setInbetweenValue(){
+		//TODO: no time to compare to
+		//		//		 for now, adding all peaks into the list
+		//		for(int i=0;i<redMeans.size()-2; i+=2){
+		//			rrInt = Math.abs(getTimeInMillis(redMeans.get(i)) - getTimeInMillis(redMeans.get(i+2)));
+		//			rrInt = (long)Math.pow((double)rrInt, 2);
+		//			//System.out.println(peaksList.get(i)[0] + " - " + peaksList.get(i+1)[0] + " = " + rrInt);
+		//			if(rrInt >= 10000){
+		//				rrIntervals.add(rrInt);
+		//			}
+		//		}
+	}
+
+	/**
+	 * takes in a start and the next value and returns the slope
+	 * @param double start
+	 * @param double oneAfter
+	 * @return int slope
+	 */
+	private int classifySlope(double start, double oneAfter){
+		//finds current slope
+		int ret;
+		if(start > oneAfter){ret = -1;}
+		else if(start < oneAfter){ret = 1;}
+		else{ret = 0;}
+		return ret; //positive slope if true, negative slope if false or 0 if no slope othherwise.
+	}
+
 	public void sendUpdatedRedValuestoUI(double redValue){
 		float currentRedValue = (float)redValue;
-    	if (widgets[STREAMS.REDVALUES.ordinal()] !=null){
-    		((ContextImageWidget)widgets[STREAMS.REDVALUES.ordinal()]).history_view.add(currentRedValue);
-    	}
+		if (widgets[STREAMS.REDVALUES.ordinal()] !=null){
+			((ContextImageWidget)widgets[STREAMS.REDVALUES.ordinal()]).history_view.add(currentRedValue);
+		}
 	}
 
 
@@ -659,6 +802,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 			osw.write("Index\tTime Stamp\tred Values\n");
 			osw.write("Start: "+System.currentTimeMillis()+"\n");
 
+			// this is the file out, don't really need
 			for (int i=0; i<meanreds.length;i++){
 
 				if (filterOn){
@@ -704,7 +848,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	}
 
 	//Decode YUV color code to hex
-	void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {  
+	void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
 
 		final int frameSize = width * height;  
 
@@ -735,7 +879,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 			rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);  
 
 
-		}  
+		}
 		}  
 
 	}  

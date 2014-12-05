@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.camera"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="4.0" >
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="20" />
 
     <!-- ADDED: We will request access to the camera, saying we require a camera
          of some sort but not one with autofocus capability. -->
