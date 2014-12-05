@@ -321,6 +321,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 
 	private List<Double> redMeans = new ArrayList<Double>();
 	private List<Double> buffer = new ArrayList<Double>();
+	private long startTime =0; //TODO: bookmark
 	//private ArrayList<Float> time;
 
 
@@ -398,7 +399,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 			//mPreviewSize= getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
 
 			Log.i("finalwidth: ",""+mPreviewSize.width);
-
+			startTime = (System.currentTimeMillis()/1000);
 		}
 	}
 
@@ -578,16 +579,12 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	//define what the callback should do before rendering a preview frame to the screen
 	@Override  
 	public void onPreviewFrame(byte[] data, Camera camera) {  
+		
 		//transforms NV21 pixel data into RGB pixels 
 		//********************************************
 
 		//PLEASE PUT ALGORITHM HERE AND UPDATE heartbeatCount AS THE ALGORITHM DETECTS A BEAT
-		int heartbeatCount = 0;
 
-		//TODO: most of the code will go here!
-		CameraPreview.getHeartbeatView().setText(""+heartbeatCount);
-		//********************************************
-		camera.addCallbackBuffer(data);
 
 		//Collect color data and store them but now replacing each frame with new frame
 		decodeYUV420SP(pixels, data, mPreviewSize.width,  mPreviewSize.height);  
@@ -615,20 +612,47 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//Log.i("SUM: ",""+sum);
 		//Log.i("MEAN: ",""+mean);
 
-				sum=0;
-
-		//guarentees at least 5 records
-		if(buffer.size() >=10){
+		sum=0;
+		//window size
+		if(buffer.size() >=15){
 			System.out.println("I have >=10 items!");
-			redMeans = findAllPeaksAndDips(buffer, redMeans);
+			redMeans = findDipsOnly2(buffer,redMeans);
 			buffer.clear();
-			redMeans = findDipsOnly(redMeans);
+			
+//			redMeans = findAllPeaksAndDips(buffer, redMeans);
+//			buffer.clear();
+//			redMeans = findDipsOnly(redMeans);
 			
 			System.out.println("Size of dips only: " + redMeans.size());
 		}
 		else{
 			System.out.println("less than 5 items");
 		}
+		
+
+		
+		
+		long endRecordTime = (System.currentTimeMillis()/1000);
+		System.out.println("timeDifference: " + (endRecordTime - startTime));
+		double heartbeatCount = Math.max(1,redMeans.size());
+		System.out.println("heartbeatCount: " + heartbeatCount);
+		
+		double bpm = 0;
+		float time = Math.max(1,(endRecordTime- startTime));
+		if((endRecordTime- startTime) < 60){
+			bpm = heartbeatCount * (60/(time));
+		}
+		else{
+			bpm = heartbeatCount/(time);
+		}
+		
+		//TODO: most of the code will go here!
+		CameraPreview.getHeartbeatView().setText(""+bpm);
+		//********************************************
+		camera.addCallbackBuffer(data);
+		
+		//redMeans = randomRestart();
+		
 //				if (frameCount<nframe && frameCount!=-1){	
 //					meanreds[frameCount]=mean;
 //					frameCount++;
@@ -644,6 +668,23 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 //				}
 	}  
 
+	/**
+	 * random restarting, resets start time and empties the heartbeat list
+	 * @return
+	 */
+	private List<Double> randomRestart(List<Double> ret){
+		double ran = (double) (Math.random()*10);
+		List<Double> empty = new ArrayList<Double>();
+		if(ran >=10){
+			System.out.println("Random Restarting!");
+			startTime = (System.currentTimeMillis()/1000);	
+			return empty;
+		}
+		return ret;
+		
+	
+	}
+	
 	/**
 	 * filters the list for only dips and peaks, array must have at least 3 elements in the list
 	 * @param List<Double> unFilteredList
@@ -674,11 +715,12 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 			if(slope != classifySlope(currentRedMeans, nextRedMeans) && classifySlope(currentRedMeans, nextRedMeans)!= 0){
 				isChanged = true;
 				slope = classifySlope(currentRedMeans, nextRedMeans);
-				//once we found add next value of the training data into the list
+				//once slope changed, add next value of the training data into the list if 
 				System.out.println("peaking at: " + currentRedMeans  + " to "+ nextRedMeans + " changed slope to: " + slope);
-
+				
 				currentRedMeans = unfilteredBuffer.get(startingPeakIndex);
 				unfilteredBuffer.add(startingPeakIndex, unfilteredBuffer.get(startingPeakIndex+1));
+				System.out.println("adding peak: " + currentRedMeans);
 				startingPeakIndex+=1;
 				//set currentRedMeans to the next value to be compared
 			}
@@ -742,6 +784,50 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 				dynamicPeakListSize = dipsOnly.size();
 			}
 			indexCount+=2;
+		}
+		return dipsOnly;
+	}
+	/**
+	 * takes in a list of only dips and peaks and returns an arrayList of only dips
+	 * list needs to be at least 5 elements long
+	 * @param List<Double>dipsAndPeaks
+	 * @return List<Double>
+	 */
+	private List<Double> findDipsOnly2(List<Double> buffer, List<Double> redMean){
+		
+		int downThenUpCount = 0;
+		int indexCount = 0;
+		List<Double> b = buffer;
+		List<Double>dipsOnly = redMean; 
+		int dynamicPeakListSize = buffer.size();
+		//find up then down pattern
+		while(true){
+			if(indexCount >= dynamicPeakListSize-4){ break;}
+
+			if(downThenUpCount == 1 || classifySlope(b.get(indexCount), b.get(indexCount+1)) == -1){
+				downThenUpCount=1;
+				if(classifySlope(buffer.get(indexCount+1),b.get(indexCount+2)) == 1){
+					//we are going up after a dip now
+					downThenUpCount=0;
+				}
+				else{ // if we don't have down peak next, remove until we do
+					b.remove(indexCount+1);
+					//dipsOnly.remove(indexCount+2);
+					indexCount-=1;
+					dynamicPeakListSize = b.size();
+				}
+			}
+			else{ // if we don't start on a up peak remove until we do
+				b.remove(indexCount);
+				//dipsOnly.remove(indexCount+1);
+				indexCount-=1;
+				dynamicPeakListSize = b.size();
+			}
+			indexCount+=1;
+		}
+		
+		for(Double d : b){
+			dipsOnly.add(d);
 		}
 		return dipsOnly;
 	}
