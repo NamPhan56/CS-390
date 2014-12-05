@@ -322,6 +322,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	private List<Double> redMeans = new ArrayList<Double>();
 	private List<Double> buffer = new ArrayList<Double>();
 	private long startTime =0; //TODO: bookmark
+	
+	private long holderTime = 0;
+	
 	//private ArrayList<Float> time;
 
 
@@ -609,12 +612,13 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//coding begins here
 		//needs to make sure we get at least... 5 values into the list
 		buffer.add(mean);
+		
 		//Log.i("SUM: ",""+sum);
 		//Log.i("MEAN: ",""+mean);
 
 		sum=0;
 		//window size
-		if(buffer.size() >=15){
+		if(buffer.size() >= 15){
 			System.out.println("I have >=10 items!");
 			redMeans = findDipsOnly2(buffer,redMeans);
 			buffer.clear();
@@ -628,8 +632,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		else{
 			System.out.println("less than 5 items");
 		}
-		
-
 		
 		
 		long endRecordTime = (System.currentTimeMillis()/1000);
@@ -651,6 +653,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//********************************************
 		camera.addCallbackBuffer(data);
 		
+		redMeans = randomRestart(redMeans);
 		//redMeans = randomRestart();
 		
 //				if (frameCount<nframe && frameCount!=-1){	
@@ -673,9 +676,9 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	 * @return
 	 */
 	private List<Double> randomRestart(List<Double> ret){
-		double ran = (double) (Math.random()*10);
+		double ran = (double) (Math.random()*100);
 		List<Double> empty = new ArrayList<Double>();
-		if(ran >=10){
+		if(ran >=15){
 			System.out.println("Random Restarting!");
 			startTime = (System.currentTimeMillis()/1000);	
 			return empty;
@@ -831,8 +834,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		}
 		return dipsOnly;
 	}
-
-
 	/**
 	 * not used... 
 	 */
