@@ -642,10 +642,10 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		
 		int bpm = 0;
 		float time = Math.max(1,(endRecordTime- startTime));
-		if((endRecordTime- startTime) < 60){
+		if(time < 60 && time > 0){
 			bpm = (int) (heartbeatCount * (60/(time)));
 		}
-		else{
+		else if(time !=0){
 			bpm = (int)(heartbeatCount/(time));
 		}
 		
@@ -654,7 +654,8 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//********************************************
 		camera.addCallbackBuffer(data);
 		
-		redMeans = randomRestart(redMeans);
+		
+		//redMeans = randomRestart(redMeans);
 		//redMeans = randomRestart();
 		
 //				if (frameCount<nframe && frameCount!=-1){	
@@ -797,6 +798,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 	 */
 	private List<Double> findDipsOnly2(List<Double> buffer, List<Double> redMean){
 		
+		int frameCount =0;
 		int downThenUpCount = 0;
 		int indexCount = 0;
 		List<Double> b = buffer;
@@ -805,10 +807,10 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		//find up then down pattern
 		while(true){
 			if(indexCount >= dynamicPeakListSize-4){ break;}
-
 			if(downThenUpCount == 1 || classifySlope(b.get(indexCount), b.get(indexCount+1)) == -1){
 				downThenUpCount=1;
 				if(classifySlope(buffer.get(indexCount+1),b.get(indexCount+2)) == 1){
+					frameCount =0;
 					//we are going up after a dip now
 					downThenUpCount=0;
 				}
@@ -817,6 +819,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 					//dipsOnly.remove(indexCount+2);
 					indexCount-=1;
 					dynamicPeakListSize = b.size();
+					frameCount++;
 				}
 			}
 			else{ // if we don't start on a up peak remove until we do
