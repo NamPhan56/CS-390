@@ -637,13 +637,13 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		double heartbeatCount = Math.max(1,redMeans.size());
 		System.out.println("heartbeatCount: " + heartbeatCount);
 		
-		double bpm = 0;
+		int bpm = 0;
 		float time = Math.max(1,(endRecordTime- startTime));
 		if((endRecordTime- startTime) < 60){
-			bpm = heartbeatCount * (60/(time));
+			bpm = (int) (heartbeatCount * (60/(time)));
 		}
 		else{
-			bpm = heartbeatCount/(time);
+			bpm = (int)(heartbeatCount/(time));
 		}
 		
 		//TODO: most of the code will go here!
