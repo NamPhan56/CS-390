@@ -611,6 +611,7 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 		
 		//coding begins here
 		//needs to make sure we get at least... 5 values into the list
+		
 		buffer.add(mean);
 		
 		//Log.i("SUM: ",""+sum);
@@ -684,8 +685,6 @@ class Preview extends ViewGroup implements SurfaceHolder.Callback, PreviewCallba
 			return empty;
 		}
 		return ret;
-		
-	
 	}
 	
 	/**
